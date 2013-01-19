@@ -17,7 +17,7 @@ char buf[512]; //Text buffer
 bool started = false, dumped = false, dump_in_progress = false, MMC = false, write = false;
 unsigned int config = 0;
 
-extern "C" VOID __cdecl dprintf( const CHAR* strFormat, ... )
+extern "C" VOID __cdecl dprintf(const CHAR* strFormat, ...)
 {
 	FILE* flog;
 	va_list pArglist;

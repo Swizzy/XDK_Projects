@@ -5,7 +5,7 @@
 #include "Corona4G.h"
 
 
-VOID dprintf( const CHAR* strFormat, ... );
+extern "C" VOID __cdecl dprintf(const CHAR* strFormat, ...);
 #define printf dprintf
 
 #define BUF_SIZE	0x8000
