@@ -1,5 +1,8 @@
-Simple 360 NAND Flasher By Swizzy v1.2
-**************************************
+Simple 360 NAND Flasher By Swizzy v1.3 (BETA)
+*********************************************
+
+** Please note that this is an open BETA, it have been tested by me and a few friends, but... i don't take any
+responsibility for possible bricks, make sure you understand this before you use this new version! **
 
 ****************
 * Requirements *
@@ -7,6 +10,9 @@ Simple 360 NAND Flasher By Swizzy v1.2
 
 - A Hacked Xbox 360 (JTAG/RGH or similar)
 - A nand dump to write or just enough space to save your nanddump on whatever device you use this app on
+** For AutoMode: **
+- A CRC32 hash of updflash.bin (in file updflash.crc32)
+- A File named "simpleflasher.cmd" containing a command described in the secton "AutoMode" below 
 
 ****************
 * What it does *
@@ -15,11 +21,35 @@ Simple 360 NAND Flasher By Swizzy v1.2
 - It'll flash your motherboards nand with the supplied image (updflash.bin) using rawflash v4 or rawflash4g v1
 - It'll dump your motherboards nand with to flashdmp.bin using rawdump v1 or rawdump4g v1
 
+************
+* AutoMode *
+************
+Below is a list of commands followed by an explanation of what it does:
+read - Dumps nand to flashdmp.bin and generates a CRC32 hash in flashdmp.crc32
+dump - ^ same as above
+write - Writes updflash.bin to nand (if CRC32 hash matches)
+flash - ^ same as above
+safe - Safeflash (dump + write) requires CRC32 hash like write, but dumps to recovery.bin instead
+exit - Just exit the app, mainly meant for just extracting CPUKey...
+reboot - Reboots the whole console, mainly meant for FSD plugin updates
+
+In order for these features to actually work you have to write any of the above keywords/commands in a file called "simpleflasher.cmd"
+This file is read on launch and deleted once read (NOTE: It'll ONLY read 1 line!)
+
+*********************
+* CPUKey Extraction *
+*********************
+It's finally here, i could've had it working a long time ago, i just didn't get the test app working... and decided to put it aside for a while...
+
+This feature will not work on every dash, old ones will most likely not work, it uses a peek feature introduced by Dashlaunch a while back, i don't know when, nor does cOz remember when...
+Etheir way, if it doesn't work it'll post a message to you saying that you'll have to use xell... ;)
+
 ***********
 * Credits *
 ***********
 - cOz Thanks for all the help you constantly give me with just about everything, and thanks for rawflash! :D
 - Thanks to xvistaman for helping me solve that one last error i had with corona4g writes! i owe you ;)
+- Thanks to blaKcat for listening to me about security stuff, CRC32 hashes etc. and not releasing the modified version before my official one ;)
 - Thanks to everyone that has helped me test it!: Jonblu @ Consoleopen, Sileandro and Razkar And others that i don't know the name of...
 - Thanks also goes to who ever it was that ported rawflash to SDK in the first place and making it open source!
 - Thanks also to everyone that reports bugs and/or errors in ALL my apps :)
@@ -27,12 +57,21 @@ Simple 360 NAND Flasher By Swizzy v1.2
 *******************
 * Future features *
 *******************
- - Cpukey retreival:
-I'm working on getting this to work, it's not present in the current source code, but i've got a few things to work with that will hopefully make this possible aswell, it might not work with all dashboard versions etc. but atleast the current ones ;) it's probably going to take a while before you see this feature, but have no fear, it'll come eventually ;)
+- Standalone Network controls (AutoMode was designed for AutoGG's network updates and requires FTP access with App Execution)
 
 *************
 * Changelog *
 *************
+
+v1.3 (BETA)
+ - Added: Auto/Manual mode, it can now do things straight away rather then waiting for user input...
+ - Added: CPUKey Extraction this is done before it asks what to do, or even reads automode files...
+ - Added: It'll display the currently running dashboard version for you (Useful when dumping/updating to see what's running atm)
+ - Fixed: Output log will nolonger include anything that starts with "\r" meaning anything that reports status...
+ - Changed: Changed the text color to gold (0xFFFFD700)
+ - Changed: Font size is now smaller, and i've changed the font from Verdana to X360 by Redge
+ - Changed: The console will now hard-reset itself rather then power off (same way as a normal Xbox 360 update do)
+ - Changed: It'll now clear the screen before it starts reading/writing, giving you a more clear picture of what's going on ;)
 
 v1.2
  - Added: Full support for Corona v2 (4GB Corona)

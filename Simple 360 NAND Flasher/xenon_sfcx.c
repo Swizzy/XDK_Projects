@@ -7,8 +7,7 @@
 #include "xenon_sfcx.h"
 #include "Corona4G.h"
 
-VOID __cdecl dprintf( const CHAR* strFormat, ... );
-#define printf dprintf
+#include "OutputConsole.h"
 
 struct sfc sfc = {0};
 unsigned char* blockbuf;
@@ -68,14 +67,14 @@ int sfcx_read_page(unsigned char *data, int address, int raw)
 	if (!SFCX_SUCCESS(status))
 	{
 		if (status & STATUS_BB_ER)
-			printf(" ! SFCX: Bad block found at %08X\n", sfcx_address_to_block(address));
+			dprintf(" ! SFCX: Bad block found at %08X\n", sfcx_address_to_block(address));
 		else if (status & STATUS_ECC_ER)
-			//	printf(" ! SFCX: (Corrected) ECC error at address %08X: %08X\n", address, status);
+			//	dprintf(" ! SFCX: (Corrected) ECC error at address %08X: %08X\n", address, status);
 			status = status;
 		else if (!raw && (status & STATUS_ILL_LOG))
-			printf(" ! SFCX: Illegal logical block at %08X (status: %08X)\n", sfcx_address_to_block(address), status);
+			dprintf(" ! SFCX: Illegal logical block at %08X (status: %08X)\n", sfcx_address_to_block(address), status);
 		else
-			printf(" ! SFCX: Unknown error at address %08X: %08X. Please worry.\n", address, status);
+			dprintf(" ! SFCX: Unknown error at address %08X: %08X. Please worry.\n", address, status);
 	}
 
 	// Set internal page buffer pointer to 0
@@ -137,7 +136,7 @@ int sfcx_write_page(unsigned char *data, int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	if (!SFCX_SUCCESS(status))
-		printf(" ! SFCX: Unexpected sfcx_write_page status %08X\n", status);
+		dprintf(" ! SFCX: Unexpected sfcx_write_page status %08X\n", status);
 
 	// Disable Writes
 	sfcx_writereg(SFCX_CONFIG, sfcx_readreg(SFCX_CONFIG) & ~CONFIG_WP_EN);
@@ -204,7 +203,7 @@ int sfcx_erase_block(int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	//if (!SFCX_SUCCESS(status))
-	//	printf(" ! SFCX: Unexpected sfcx_erase_block status %08X\n", status);
+	//	dprintf(" ! SFCX: Unexpected sfcx_erase_block status %08X\n", status);
 	sfcx_writereg(SFCX_STATUS, 0xFF);
 
 	// Disable Writes
@@ -410,10 +409,10 @@ int rawflash_writeImage(int len, FILE * fd)
 	int addr, addrphy, status, r;
 	int readsz = sfc.pages_in_block*sfc.page_sz_phys;
 	int numblocks = (len/sfc.block_sz_phys);
-	blockbuf = malloc(readsz);
+	blockbuf = (unsigned char*)malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		printf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
+		dprintf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
@@ -421,7 +420,7 @@ int rawflash_writeImage(int len, FILE * fd)
 	while(i < numblocks)
 	{
 		KillControllers();
-		printf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -430,7 +429,7 @@ int rawflash_writeImage(int len, FILE * fd)
 		r = fread( blockbuf, readsz, 1, fd);
 		if (r < 0)
 		{
-			printf("\rERROR: failed to read %d bytes from file\n\n",readsz);
+			dprintf("\rERROR: failed to read %d bytes from file\n\n",readsz);
 			return 0;
 		}
 		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) == 0)
@@ -441,10 +440,10 @@ int rawflash_writeImage(int len, FILE * fd)
 			sfcx_write_block(blockbuf, addrphy);
 		}
 		else
-			printf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
+			dprintf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
 		i++;
 	}
-	printf("\r\n\n");
+	dprintf("\r\n\n");
 	return 1;
 }
 
@@ -458,14 +457,14 @@ int rawflash_readImage(int len, FILE * fd)
 	blockbuf = malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		printf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
+		dprintf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
 		secondPgOffset = 0x1080; // 0x210*8
 	while(i < numblocks)
 	{
-		printf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -473,13 +472,13 @@ int rawflash_readImage(int len, FILE * fd)
 			status = status | STATUS_BB_ER;
 		if (fwrite( blockbuf, readsz, 1, fd) < 0)
 		{
-			printf("\rERROR: failed to write %d bytes to file\n\n",readsz);
+			dprintf("\rERROR: failed to write %d bytes to file\n\n",readsz);
 			return 0;
 		}
-		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) printf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
+		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
 		i++;
 	}
-	printf("\r\n\n");
+	dprintf("\r\n\n");
 	return 1;
 }
 
@@ -490,10 +489,10 @@ void try_rawflash(char *filename)
 	int size;
 	if (fopen_s(&fd, filename, "rb") != 0)
 	{
-		printf("File %s not found\n", filename);
+		dprintf("File %s not found\n", filename);
 		return;
 	}
-	printf(" * rawflash v4 started (by cOz)\n");
+	dprintf(" * rawflash v4 started (by cOz)\n");
 
 	_stat64(filename, &s);
 	size = (int)(s.st_size&0xFFFFFFFF);
@@ -501,15 +500,15 @@ void try_rawflash(char *filename)
 		size = RAW_NAND_64;
 	else if((size != 0x1080000)&& (size != RAW_NAND_64)) // 16 M size
 	{
-		printf("error: %s - size %d is not valid image size!\n", filename, size);
+		dprintf("error: %s - size %d is not valid image size!\n", filename, size);
 		fclose(fd);
 		return;
 	}
-	printf("%s opened OK, attempting to write 0x%x bytes to flash...\n",filename, size);
+	dprintf("%s opened OK, attempting to write 0x%x bytes to flash...\n",filename, size);
 	if(rawflash_writeImage(size, fd) == 1)
-		printf("image written :D\n");
+		dprintf("image written :D\n");
 	else
-		printf("failed to write image :(\n");
+		dprintf("failed to write image :(\n");
 
 	fclose(fd);
 	if(blockbuf != NULL)
@@ -521,7 +520,7 @@ void try_rawdump(char *filename, int size)
 	FILE * fd;
 	if (fopen_s(&fd, filename, "wb") != 0)
 	{
-		printf("ERROR: Unable to open %s for write\n", filename);
+		dprintf("ERROR: Unable to open %s for write\n", filename);
 		return;
 	}
 	if (size == 0)
@@ -531,17 +530,17 @@ void try_rawdump(char *filename, int size)
 			size = RAW_NAND_64;
 		else if((size != 0x1080000)&& (size != RAW_NAND_64)) // 16 M size
 		{
-			printf("error: size %d is not supported!\n", size);
+			dprintf("error: size %d is not supported!\n", size);
 			fclose(fd);
 			return;
 		}
 	}
-	printf(" * rawdump v1 started (by Swizzy)\n");
-	printf("%s opened OK, attempting to read 0x%x bytes from flash...\n",filename, size);
+	dprintf(" * rawdump v1 started (by Swizzy)\n");
+	dprintf("%s opened OK, attempting to read 0x%x bytes from flash...\n",filename, size);
 	if(rawflash_readImage(size, fd) == 1)
-		printf("NAND Dumped! :D\n");
+		dprintf("NAND Dumped! :D\n");
 	else
-		printf("failed to dump NAND :(\n");
+		dprintf("failed to dump NAND :(\n");
 
 	fclose(fd);
 	if(blockbuf != NULL)
@@ -572,7 +571,7 @@ unsigned int sfcx_init(void)
 		switch ((config >> 4) & 0x3)
 		{
 		case 0: // Unsupported 8MB?
-			printf(" ! SFCX: Unsupported Type A-0\n");
+			dprintf(" ! SFCX: Unsupported Type A-0\n");
 			Sleep(5);
 			return 1;
 
@@ -618,7 +617,7 @@ unsigned int sfcx_init(void)
 			{
 				// Unsupported
 				sfc.meta_type = META_TYPE_0;
-				printf(" ! SFCX: Unsupported Type B-0\n");
+				dprintf(" ! SFCX: Unsupported Type B-0\n");
 				Sleep(5);
 				return 2;
 			}
@@ -684,7 +683,7 @@ unsigned int sfcx_init(void)
 		break;
 
 	default:
-		printf(" ! SFCX: Unsupported Type\n");
+		dprintf(" ! SFCX: Unsupported Type\n");
 		Sleep(5);
 		return 3;
 	}
@@ -705,14 +704,14 @@ unsigned int sfcx_init(void)
 
 	meta_type = sfcx_read_metadata_type();
 	if (meta_type == -1){
-	printf(" ! SFCX: Meta Type detection error\n");
+	dprintf(" ! SFCX: Meta Type detection error\n");
 	delay(5);
 	return 4;
 	}
 
 	if (meta_type != sfc.meta_type){
-	printf(" ! SFCX: Meta Type detection difference\n");
-	printf(" ! SFCX: expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
+	dprintf(" ! SFCX: Meta Type detection difference\n");
+	dprintf(" ! SFCX: expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
 	sfc.meta_type = meta_type;
 	}
 
@@ -727,23 +726,23 @@ void sfcx_setconf(unsigned int config) { sfcx_writereg(SFCX_CONFIG, config); }
 
 void sfcx_printinfo(unsigned int config)
 {
-	printf("   config register     = %08X\n", config);
+	dprintf("   config register     = %08X\n", config);
 
-	printf("   sfc:page_sz         = %08X\n", sfc.page_sz);
-	printf("   sfc:meta_sz         = %08X\n", sfc.meta_sz);
-	printf("   sfc:page_sz_phys    = %08X\n", sfc.page_sz_phys);
+	dprintf("   sfc:page_sz         = %08X\n", sfc.page_sz);
+	dprintf("   sfc:meta_sz         = %08X\n", sfc.meta_sz);
+	dprintf("   sfc:page_sz_phys    = %08X\n", sfc.page_sz_phys);
 
-	printf("   sfc:pages_in_block  = %08X\n", sfc.pages_in_block);
-	printf("   sfc:block_sz        = %08X\n", sfc.block_sz);
-	printf("   sfc:block_sz_phys   = %08X\n", sfc.block_sz_phys);
+	dprintf("   sfc:pages_in_block  = %08X\n", sfc.pages_in_block);
+	dprintf("   sfc:block_sz        = %08X\n", sfc.block_sz);
+	dprintf("   sfc:block_sz_phys   = %08X\n", sfc.block_sz_phys);
 
-	printf("   sfc:size_mb         = %dMB\n", sfc.size_mb);
-	printf("   sfc:size_bytes      = %08X\n", sfc.size_bytes);
-	printf("   sfc:size_bytes_phys = %08X\n", sfc.size_bytes_phys);
+	dprintf("   sfc:size_mb         = %dMB\n", sfc.size_mb);
+	dprintf("   sfc:size_bytes      = %08X\n", sfc.size_bytes);
+	dprintf("   sfc:size_bytes_phys = %08X\n", sfc.size_bytes_phys);
 
-	printf("   sfc:size_pages      = %08X\n", sfc.size_pages);
-	printf("   sfc:size_blocks     = %08X\n", sfc.size_blocks);
-	printf("\n");
+	dprintf("   sfc:size_pages      = %08X\n", sfc.size_pages);
+	dprintf("   sfc:size_blocks     = %08X\n", sfc.size_blocks);
+	dprintf("\n");
 }
 
 int sfcx_detecttype(void)
@@ -751,9 +750,9 @@ int sfcx_detecttype(void)
 	unsigned int config = sfcx_readreg(0x7FEAC0FC);
 	if (config == 0)
 	{
-		printf(" * Detected RAW NAND device!\n * Entering NAND Mode...\n\n");
+		dprintf(" * Detected RAW NAND device!\n * Entering NAND Mode...\n\n");
 		return 0;
 	}
-	printf(" * Detected MMC NAND device!\n * Entering MMC/Corona v2 [4GB] Mode...\n\n");
+	dprintf(" * Detected MMC NAND device!\n * Entering MMC/Corona v2 [4GB] Mode...\n\n");
 	return 1;
 }

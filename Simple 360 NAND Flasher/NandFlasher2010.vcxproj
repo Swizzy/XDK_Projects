@@ -168,6 +168,7 @@
       <DeploymentType>CopyToHardDrive</DeploymentType>
       <DvdEmulationType>ZeroSeekTimes</DvdEmulationType>
       <DeploymentFiles>$(RemoteRoot)=$(ImagePath);$(RemoteRoot)\media=$(OutDir)media;</DeploymentFiles>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </Deploy>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='CodeAnalysis|Xbox 360'">
@@ -398,7 +399,7 @@
     </PostBuildEvent>
     <ImageXex>
       <ConfigurationFile>xex.xml</ConfigurationFile>
-      <AdditionalSections>font=$(OutDir)\Verdana_18.xpr,RO</AdditionalSections>
+      <AdditionalSections>font=$(OutDir)\font.xpr,RO</AdditionalSections>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <AllowControllerSwapping>true</AllowControllerSwapping>
     </ImageXex>
@@ -410,23 +411,17 @@
     </Deploy>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Automation.cpp" />
     <ClCompile Include="Corona4G.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="keyextract.cpp" />
     <ClCompile Include="nandflasher_1.cpp" />
+    <ClCompile Include="OutputConsole.cpp" />
     <ClCompile Include="xenon_sfcx.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Xbox 360'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">CompileAsC</CompileAs>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Media\Fonts\Verdana_18.rdf">
-      <Message>Create a bundled resource file from  %(FullPath)</Message>
-      <Command>bundler "%(FullPath)" -o "$(OutDir)Media\Fonts\Arial_16.xpr"</Command>
-      <Outputs>$(OutDir)Media\Fonts\Arial_16.xpr</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\Verdana_18.xpr"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">$(OutDir)\Verdana_18.xpr;%(Outputs)</Outputs>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Common\AtgFramework2010.vcxproj">
@@ -435,8 +430,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Automation.h" />
     <ClInclude Include="Corona4G.h" />
+    <ClInclude Include="keyextract.h" />
+    <ClInclude Include="OutputConsole.h" />
     <ClInclude Include="xenon_sfcx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Media\Fonts\font.rdf">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">Create a bundled resource file from  %(FullPath)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_LTCG|Xbox 360'">$(OutDir)\font.xpr;%(Outputs)</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

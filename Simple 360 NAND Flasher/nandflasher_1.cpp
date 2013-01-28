@@ -1,41 +1,21 @@
+#include "OutputConsole.h"
 #include "AtgConsole.h"
 #include "AtgInput.h"
 #include "AtgUtil.h"
 #include <time.h>
-#include <sys/stat.h>
 #include "Corona4G.h"
+#include "Automation.h"
+#include "keyextract.h"
 
 extern "C" {
 #include "xenon_sfcx.h"
 }
 
-ATG::Console    g_console;            // console for output
 ATG::GAMEPAD*	m_pGamepad; // Gamepad for input
 time_t start,end; //Timer times for measuring time difference
 double tdiff; // Double for time difference
-char buf[512]; //Text buffer
-bool started = false, dumped = false, dump_in_progress = false, MMC = false, write = false;
+bool started = false, dumped = false, dump_in_progress = false, MMC = false, write = false, AutoMode = false;
 unsigned int config = 0;
-
-extern "C" VOID __cdecl dprintf(const CHAR* strFormat, ...)
-{
-	FILE* flog;
-	va_list pArglist;
-	va_start( pArglist, strFormat );
-	vsnprintf_s(buf, 512, strFormat, pArglist);
-	va_end( pArglist );
-	fopen_s(&flog, "game:\\Simple 360 NAND Flasher.log", "a");
-	if (flog != NULL)
-	{
-		const CHAR* ignore = "processing block";
-		const CHAR* ignore2 = "Processed";
-		if (strncmp(strFormat, ignore, strlen(ignore)) != 0)
-			if (strncmp(strFormat, ignore2, strlen(ignore2)) != 0)
-				fprintf(flog, buf);
-		fclose(flog);
-	}
-	g_console.Display(buf);
-}
 
 extern "C" VOID HalReturnToFirmware(DWORD mode); // To Shutdown console when done ;)
 extern "C" VOID XInputdPowerDownDevice(DWORD flag); // To Kill controllers
@@ -46,14 +26,6 @@ VOID KillControllers()
 	XInputdPowerDownDevice(0x10000001);
 	XInputdPowerDownDevice(0x10000002);
 	XInputdPowerDownDevice(0x10000003);
-}
-
-bool fexists(const char *filename)
-{
-	struct stat info;
-	if (stat(filename, &info) == 0)
-		return true;
-	return false;
 }
 
 bool CheckPage(BYTE* page)
@@ -115,83 +87,21 @@ int HasSpare(char* filename)
 	return 1;
 }
 
+void AutoCountdown(int timeout = 5)
+{
+	for (; timeout > 0; timeout--)
+	{
+		dprintf("\rYou have %d Seconds to power off your console before the code continues...", timeout);
+		Sleep(1000);
+	}
+	dprintf("Time is up! Hope you didn't make a misstake! ;)\n");
+}
+
 VOID flasher()
 {
-	dprintf("Press Start to flash your nand or press anything else to exit!\n\n");
-	for(;;)
+	if (!AutoMode)
 	{
-		m_pGamepad = ATG::Input::GetMergedInput();
-		if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
-			break;
-		else if (m_pGamepad->wPressedButtons)
-			XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
-	}
-	started = true;
-	time(&start);
-	dprintf("WARNING! DO NOT TOUCH YOUR CONSOLE OR CONTROLLER DURING THE FLASH PROCESS!!\nThe console will power off when it's done!\n\n");
-	int tmp = HasSpare("game:\\updflash.bin");
-	if (tmp == -1)
-		XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
-	bool isEcced = (tmp == 0);	
-	if (!MMC)
-	{
-		if (!isEcced)
-		{
-			dprintf("\n\nWARNING! You are about to flash an image that don't contain SPARE data to a machine that requires it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
-			for(;;)
-			{
-				m_pGamepad = ATG::Input::GetMergedInput();
-				if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
-					break;
-				else if (m_pGamepad->wPressedButtons)
-					XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);				
-			}
-		}
-		KillControllers();
-		unsigned int r = sfcx_init();
-		sfcx_printinfo(r);
-		dprintf("\n\n");
-		try_rawflash("game:\\updflash.bin");
-		sfcx_setconf(config);
-	}
-	else
-	{
-		if (isEcced)
-		{
-			dprintf("\n\nWARNING! You are about to flash an image that contains SPARE data to a machine that don't require it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
-			for(;;)
-			{
-				m_pGamepad = ATG::Input::GetMergedInput();
-				if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
-					break;
-				else if (m_pGamepad->wPressedButtons)
-					XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
-			}
-		}
-		KillControllers();
-		try_rawflash4g("game:\\updflash.bin");
-	}
-	time(&end);
-	tdiff = difftime(end,start);
-	dprintf("Completed after %4.2f seconds\n", tdiff);
-	dprintf("Shutting down in ");
-	for (int i = 5; i > 0; i--)
-	{
-		dprintf("%i", i);
-		for (int j = 0; j < 4; j++)
-		{
-			Sleep(250);
-			dprintf(".");
-		}
-	}
-	dprintf("BYE!");
-	HalReturnToFirmware(5);
-}
-VOID dumper(char *filename)
-{
-	if (fexists(filename))
-	{
-		dprintf(" **** WARNING: %s already exists! ****\nPress Start if you want to overwrite this file now!", filename);
+		dprintf("Press Start to flash your nand or press anything else to exit!\n\n");
 		for(;;)
 		{
 			m_pGamepad = ATG::Input::GetMergedInput();
@@ -202,6 +112,101 @@ VOID dumper(char *filename)
 		}
 	}
 	started = true;
+	KillControllers();
+	ClearConsole();
+	time(&start);
+	dprintf("WARNING! DO NOT TOUCH YOUR CONSOLE OR CONTROLLER DURING THE FLASH PROCESS!!\nThe console will reboot when it's done!\n\n");
+	int tmp = HasSpare("game:\\updflash.bin");
+	if (tmp == -1)
+		XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
+	bool isEcced = (tmp == 0);	
+	if (!MMC)
+	{
+		if (!isEcced)
+		{
+			if (!AutoMode)
+			{
+				dprintf("\n\nWARNING! You are about to flash an image that don't contain SPARE data to a machine that requires it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
+				for(;;)
+				{
+					m_pGamepad = ATG::Input::GetMergedInput();
+					if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
+						break;
+					else if (m_pGamepad->wPressedButtons)
+						XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);				
+				}
+			}
+			else
+			{
+				dprintf("\n\nWARNING! You are about to flash an image that don't contain SPARE data to a machine that requires it!\nPower off your console to abort!");
+				AutoCountdown();
+			}
+		}
+		unsigned int r = sfcx_init();
+		sfcx_printinfo(r);
+		dprintf("\n\n");
+		try_rawflash("game:\\updflash.bin");
+		sfcx_setconf(config);
+	}
+	else
+	{
+		if (isEcced)
+		{
+			if (!AutoMode)
+			{
+				dprintf("\n\nWARNING! You are about to flash an image that contains SPARE data to a machine that don't require it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
+				for(;;)
+				{
+					m_pGamepad = ATG::Input::GetMergedInput();
+					if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
+						break;
+					else if (m_pGamepad->wPressedButtons)
+						XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
+				}
+			}
+			else
+			{
+				dprintf("\n\nWARNING! You are about to flash an image that contains SPARE data to a machine that don't require it!\nPower off your console to abort!");
+				AutoCountdown();
+			}
+		}
+		try_rawflash4g("game:\\updflash.bin");
+	}
+	time(&end);
+	tdiff = difftime(end,start);
+	dprintf("Completed after %4.2f seconds\n", tdiff);
+	dprintf("Rebooting in ");
+	for (int i = 5; i > 0; i--)
+	{
+		dprintf("%i", i);
+		for (int j = 0; j < 4; j++)
+		{
+			Sleep(250);
+			dprintf(".");
+		}
+	}
+	dprintf("BYE!");
+	HalReturnToFirmware(2);
+}
+
+VOID dumper(char *filename)
+{
+	if (!AutoMode)
+	{
+		if (fexists(filename))
+		{
+			dprintf(" **** WARNING: %s already exists! ****\nPress Start if you want to overwrite this file now!", filename);
+			for(;;)
+			{
+				m_pGamepad = ATG::Input::GetMergedInput();
+				if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
+					break;
+				else if (m_pGamepad->wPressedButtons)
+					XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
+			}
+		}
+	}
+	started = true;
 	if (!MMC)
 	{
 		sfcx_init();
@@ -209,31 +214,43 @@ VOID dumper(char *filename)
 		int size = sfc.size_bytes_phys;
 		if((size == (RAW_NAND_64*4)) || (size == (RAW_NAND_64*8)))
 		{
-			dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
-			dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
-			dprintf("Press Back to abort dump process...\n");
-			for(;;)
+			if (!AutoMode)
 			{
-				m_pGamepad = ATG::Input::GetMergedInput();
-				if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_A)
+				dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
+				dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
+				dprintf("Press Back to abort dump process...\n");
+				for(;;)
 				{
-					size = RAW_NAND_64;
-					break;
-				}
-				else if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_B)
-					break;
-				else if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_BACK)
-					XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
-				else if (m_pGamepad->wPressedButtons)
-				{
-					//dprintf("Try again: Press A to Dump System Partition only (64MB, Recommended!) or\nPress B to dump Full NAND (256MB/512MB, this may take a while...)\n\n");					
-					dprintf("Try again:\n");
-					dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
-					dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
-					dprintf("Press Back to abort dump process...\n");
+					m_pGamepad = ATG::Input::GetMergedInput();
+					if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_A)
+					{
+						size = RAW_NAND_64;
+						break;
+					}
+					else if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_B)
+						break;
+					else if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_BACK)
+						XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
+					else if (m_pGamepad->wPressedButtons)
+					{
+						dprintf("Try again:\n");
+						dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
+						dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
+						dprintf("Press Back to abort dump process...\n");
+					}
 				}
 			}
+			else
+			{
+				if (size == (RAW_NAND_64*4))
+					size = 256;
+				else
+					size = 512;
+				dprintf(" * %d MB NAND Detected! Setting dump size to 64MB!", size);
+				size = RAW_NAND_64;
+			}
 		}
+		ClearConsole();
 		time(&start);
 		unsigned int r = sfcx_init();
 		sfcx_printinfo(r);
@@ -242,6 +259,7 @@ VOID dumper(char *filename)
 	}
 	else
 	{
+		ClearConsole();
 		time(&start);
 		try_rawdump4g(filename);
 	}
@@ -249,6 +267,89 @@ VOID dumper(char *filename)
 	tdiff = difftime(end,start);
 	dprintf("Completed after %4.2f seconds\n", tdiff);
 	dumped = true;
+}
+
+void PrintExecutingCountdown(int max)
+{
+	for (; max > 0; max--)
+	{
+		dprintf("\rExecuting command in %d seconds", max);
+		Sleep(1000);
+	}
+	dprintf("\rExecuting command!\n");
+}
+
+void TryAutoMode()
+{
+	dprintf(" * Looking for simpleflasher.cmd for automatic features...\n");
+	if (fexists("game:\\simpleflasher.cmd"))
+	{
+		AutoMode = true;
+		dprintf("game:\\simpleflasher.cmd Found!\n * Entering Automatic mode!\n");
+		int mode = CheckMode("game:\\simpleflasher.cmd");
+		if (mode == 1) //AutoDump
+		{
+			dprintf(" * AutoDump command found!\n * Executing command!\n\n");
+			dumper("game:\\flashdmp.bin");
+			GenerateHash("game:\\flashdmp.bin");
+		}
+		else if (mode == 2) //AutoFlash
+		{
+			dprintf(" * AutoFlash command found!\n\n");
+			if (CheckHash("game:\\updflash.bin"))
+			{
+				PrintExecutingCountdown(5);
+				flasher();
+			}
+			else
+				dprintf(" ! ERROR: Hash don't match, or file don't exist... Aborting!\n");
+		}
+		else if (mode == 3) //AutoSafeFlash
+		{
+			dprintf(" * AutoSafeFlash command found!\n\n");
+			if (CheckHash("game:\\updflash.bin"))
+			{
+				PrintExecutingCountdown(5);
+				dumper("game:\\recovery.bin");
+				AutoCountdown();
+				flasher();
+			}
+			else
+				dprintf(" ! ERROR: Hash don't match, or file don't exist... Aborting!\n");
+		}
+		else if (mode == 4) //AutoExit, only want key...
+		{
+			dprintf(" * AutoExit command found!\n\n");
+			PrintExecutingCountdown(5);
+		}
+		else if (mode == 5) //AutoReboot Hard Reset
+		{
+			dprintf(" * AutoReboot command found!\n\n");
+			PrintExecutingCountdown(5);
+			HalReturnToFirmware(2);
+		}
+		else
+		{
+			dprintf("! ERROR: Bad command file please read the readme!\nReturning to manual mode!\n");
+			AutoMode = false;
+			return;
+		}
+		if (AutoMode)
+			XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0); //We don't want to return to manual mode ;)
+	}
+	else
+	{
+		dprintf("game:\\simpleflasher.cmd NOT Found!\n * Entering Manual mode!\n\n");
+	}
+}
+
+void PrintConsoleInfo(bool GotKey)
+{
+	dprintf("\n============= Console information: =============\n\n");
+	PrintDash();
+	if (GotKey)
+		PrintCPUKey();
+	dprintf("\n================================================\n\n");
 }
 
 //--------------------------------------------------------------------------------------
@@ -259,14 +360,28 @@ VOID __cdecl main()
 {
 	// Initialize the console window
 	write = fexists("game:\\updflash.bin");
-	g_console.Create("embed:\\font", 0xFF000000, 0xFF008000);
-	g_console.SendOutputToDebugChannel( TRUE );
+	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
 
-	dprintf("Simple 360 NAND Flasher by Swizzy v1.2\n\n");
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.3 (BETA)\n\n");
 
-	dprintf("Detecting NAND Type...\n");
+	dprintf(" * Detecting NAND Type...\n");
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND
-
+	if (!MMC)
+		config = sfcx_getconf();
+	bool GotKey = false;
+	dprintf(" * Attempting to grab CPUKey...\n");
+	if (GetCPUKey())
+	{
+		SaveCPUKey("game:\\cpukey.txt");
+		GotKey = true;
+	}
+	else
+	{
+		dprintf(" ! ERROR: Your dashboard is to old for this feature, sorry... use xell!\n");
+		GotKey = false;
+	}
+	PrintConsoleInfo(GotKey);
+	TryAutoMode();
 	if (write)
 	{
 		if (!MMC)
@@ -285,12 +400,8 @@ VOID __cdecl main()
 	else
 		dprintf("Press X if you want to dump your nand with Rawdump4G v1\n");
 	dprintf("If you press anything else the application will close...\n");
-
-	if (!MMC)
-		config = sfcx_getconf();
 	for(;;)
 	{
-		g_console.Render();
 		m_pGamepad = ATG::Input::GetMergedInput();
 		if (!started)
 		{
