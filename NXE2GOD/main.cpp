@@ -448,18 +448,19 @@ VOID __cdecl main()
 	//genlog(); //<--- only use this when you're lazy ;)
 	debuglog = FileExists("game:\\debug.log");
 	mountdrives();
+	console.Format("\n");
 	for(unsigned int i = 0; i < devices.size(); i++)
 	{
 		if (devices.size() == 0)
 			break;
 		unsigned int tmpsize = allNXE.size();
-		console.Format("\nScanning %s\\ for NXE titles...", devices[i].c_str());
+		console.Format("Scanning %s\\ for NXE titles...", devices[i].c_str());
 		string tmp = devices[i] + filePathzzz;
 		ScanDir(tmp);
 		if (allNXE.size() == tmpsize)
 			console.Format("No NXE titles found!\n");
 		else if (tmpsize != 0)
-			console.Format("Found %d NXE titles!\n", tmpsize - allNXE.size());
+			console.Format("Found %d NXE titles!\n", allNXE.size() - tmpsize);
 		else
 			console.Format("Found %d NXE titles!\n", allNXE.size());
 	}

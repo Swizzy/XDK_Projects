@@ -18,7 +18,7 @@ Basically what this means is that we remove the need for the disc to be in the D
 *****************
 
 In the release there is 2 packages, one for XEX and another for LIVE, the LIVE one is meant for installs
-to device:\Content\0000000000000000\FFFF0055\ which allows you to start it straight from dash! :D
+to device:\Content\0000000000000000\FFFF0055\00080000\ which allows you to start it straight from dash! :D
 
 The XEX Version is meant for those of you wanting to create your own live package, or simply wish to run it from USB ;)
 
@@ -26,7 +26,7 @@ The XEX Version is meant for those of you wanting to create your own live packag
 * Changelog *
 *************
 
-v1.2 - Mod by Swizzy released 19-01-2013
+v1.2 - Mod by Swizzy released 23-01-2013
 + Added support for USBMU Devices, Limited to: USBMU0, USBMU1, USBMU2, USBMU3, USBMU4
 (Meaning up to 5 USB Devices with a Memory unit on it) still have the HDD scan tho ;)
 + Fixed bug with leaving the 00004000 directory, it'll now be deleted like everything else
