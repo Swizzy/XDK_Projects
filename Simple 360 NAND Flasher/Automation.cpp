@@ -54,7 +54,7 @@ bool CheckCRC32(string file, string hashfile)
 	if (f != NULL)
 	{
 		unsigned int crc2 = 0;
-		fscanf_s(f, "%08x", &crc2);
+		fscanf_s(f, "%X", &crc2);
 		PrintValue(crc, crc2);
 		return (crc == crc2);			
 	}
@@ -106,7 +106,7 @@ void GenerateCRC32(string file)
 //	if (fopen_s(&f, hashfile.c_str(), "r"))
 //	{
 //		unsigned int sha2 = 0;
-//		fscanf_s(f, "%08x", &sha2);
+//		fscanf_s(f, "%X", &sha2);
 //		PrintValue(sha, sha2);
 //		return (sha == sha2);			
 //	}

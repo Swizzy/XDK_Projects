@@ -412,7 +412,7 @@ int rawflash_writeImage(int len, FILE * fd)
 	blockbuf = (unsigned char*)malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		dprintf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
+		dprintf("ERROR: unable to allocate 0x%X bytes for a buffer!\n", readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
@@ -420,7 +420,7 @@ int rawflash_writeImage(int len, FILE * fd)
 	while(i < numblocks)
 	{
 		KillControllers();
-		dprintf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf("\rprocessing block 0x%X of 0x%X (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -432,7 +432,15 @@ int rawflash_writeImage(int len, FILE * fd)
 			dprintf("\rERROR: failed to read %d bytes from file\n\n",readsz);
 			return 0;
 		}
-		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) == 0)
+		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0)
+		{
+			addr = i*sfc.block_sz_phys;
+			addrphy = i*sfc.block_sz;
+			printf("block 0x%X seems bad, status 0x%X\n", i, status);
+			sfcx_erase_block(addrphy);
+			status = sfcx_erase_block(addrphy);
+		}
+		if((status & (STATUS_BB_ER|STATUS_ECC_ER|STATUS_WR_ER)) == 0)
 		{
 			addr = i*sfc.block_sz_phys;
 			addrphy = i*sfc.block_sz;
@@ -440,7 +448,16 @@ int rawflash_writeImage(int len, FILE * fd)
 			sfcx_write_block(blockbuf, addrphy);
 		}
 		else
-			dprintf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
+			printf("Block cannot be recovered (A.K.A it's really bad)\n");
+		/*if((status & (STATUS_BB_ER|STATUS_ECC_ER)) == 0)
+		{
+			addr = i*sfc.block_sz_phys;
+			addrphy = i*sfc.block_sz;
+			sfcx_erase_block(addrphy);
+			sfcx_write_block(blockbuf, addrphy);
+		}
+		else
+			dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);*/
 		i++;
 	}
 	dprintf("\r\n\n");
@@ -457,14 +474,14 @@ int rawflash_readImage(int len, FILE * fd)
 	blockbuf = malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		dprintf("ERROR: unable to allocate 0x%x bytes for a buffer!\n", readsz);
+		dprintf("ERROR: unable to allocate 0x%X bytes for a buffer!\n", readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
 		secondPgOffset = 0x1080; // 0x210*8
 	while(i < numblocks)
 	{
-		dprintf("\rprocessing block 0x%04x of 0x%04x (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf("\rprocessing block 0x%X of 0x%X (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -475,7 +492,7 @@ int rawflash_readImage(int len, FILE * fd)
 			dprintf("\rERROR: failed to write %d bytes to file\n\n",readsz);
 			return 0;
 		}
-		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf("\rblock 0x%x seems bad, status 0x%08x\n", i, status);
+		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);
 		i++;
 	}
 	dprintf("\r\n\n");
@@ -492,7 +509,7 @@ void try_rawflash(char *filename)
 		dprintf("File %s not found\n", filename);
 		return;
 	}
-	dprintf(" * rawflash v4 started (by cOz)\n");
+	dprintf(" * rawflash v5 started (by cOz, modified By Swizzy)\n");
 
 	_stat64(filename, &s);
 	size = (int)(s.st_size&0xFFFFFFFF);
@@ -504,7 +521,7 @@ void try_rawflash(char *filename)
 		fclose(fd);
 		return;
 	}
-	dprintf("%s opened OK, attempting to write 0x%x bytes to flash...\n",filename, size);
+	dprintf("%s opened OK, attempting to write 0x%X bytes to flash...\n",filename, size);
 	if(rawflash_writeImage(size, fd) == 1)
 		dprintf("image written :D\n");
 	else
@@ -536,7 +553,7 @@ void try_rawdump(char *filename, int size)
 		}
 	}
 	dprintf(" * rawdump v1 started (by Swizzy)\n");
-	dprintf("%s opened OK, attempting to read 0x%x bytes from flash...\n",filename, size);
+	dprintf("%s opened OK, attempting to read 0x%X bytes from flash...\n",filename, size);
 	if(rawflash_readImage(size, fd) == 1)
 		dprintf("NAND Dumped! :D\n");
 	else

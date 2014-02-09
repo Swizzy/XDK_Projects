@@ -1,4 +1,4 @@
-Simple 360 NAND Flasher By Swizzy v1.3 (BETA)
+Simple 360 NAND Flasher By Swizzy v1.4 (BETA)
 *********************************************
 
 ** Please note that this is an open BETA, it have been tested by me and a few friends, but... i don't take any
@@ -41,8 +41,7 @@ This file is read on launch and deleted once read (NOTE: It'll ONLY read 1 line!
 *********************
 It's finally here, i could've had it working a long time ago, i just didn't get the test app working... and decided to put it aside for a while...
 
-This feature will not work on every dash, old ones will most likely not work, it uses a peek feature introduced by Dashlaunch a while back, i don't know when, nor does cOz remember when...
-Etheir way, if it doesn't work it'll post a message to you saying that you'll have to use xell... ;)
+This feature requires that you have dashlaunch 3.01 or later installed, if you don't it'll warn you about it...
 
 ***********
 * Credits *
@@ -62,6 +61,11 @@ Etheir way, if it doesn't work it'll post a message to you saying that you'll ha
 *************
 * Changelog *
 *************
+v1.4 (BETA)
+ - Changed: CPUKey Extraction now also works with Dashlaunch 3.08 and later
+ - Changed: The message shown when CPUKey Extraction fails nolonger mentions old dashboards, but instead mentions incompatible Dashlaunch version...
+ - Changed: Rawflash now tries to recover from a previous badflash (it erases each block and checks it again before thinking of it as bad...)
+ - Added: It'll now also show you the currently running Dashlaunch version (if there is one running)
 
 v1.3 (BETA)
  - Added: Auto/Manual mode, it can now do things straight away rather then waiting for user input...

@@ -347,6 +347,7 @@ void PrintConsoleInfo(bool GotKey)
 {
 	dprintf("\n============= Console information: =============\n\n");
 	PrintDash();
+	PrintDLVersion();
 	if (GotKey)
 		PrintCPUKey();
 	dprintf("\n================================================\n\n");
@@ -362,7 +363,7 @@ VOID __cdecl main()
 	write = fexists("game:\\updflash.bin");
 	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
 
-	dprintf("Simple 360 NAND Flasher by Swizzy v1.3 (BETA)\n\n");
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.4 (BETA)\n\n");
 
 	dprintf(" * Detecting NAND Type...\n");
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND
@@ -377,7 +378,7 @@ VOID __cdecl main()
 	}
 	else
 	{
-		dprintf(" ! ERROR: Your dashboard is to old for this feature, sorry... use xell!\n");
+		dprintf(" ! ERROR: Incompatible Dashlaunch version detected! Use XeLL instead!\n");
 		GotKey = false;
 	}
 	PrintConsoleInfo(GotKey);
@@ -386,8 +387,8 @@ VOID __cdecl main()
 	{
 		if (!MMC)
 		{
-			dprintf("Press A if you want to flash your nand with Rawflash v4\n");
-			dprintf("Press B if you want to safeflash your nand with Rawflash v4 (Dump + Write)\n");
+			dprintf("Press A if you want to flash your nand with Rawflash v5\n");
+			dprintf("Press B if you want to safeflash your nand with Rawflash v5 (Dump + Write)\n");
 		}
 		else
 		{

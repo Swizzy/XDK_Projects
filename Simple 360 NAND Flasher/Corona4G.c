@@ -52,7 +52,7 @@ int getflashsz(void)
 	fseek(fd, 0L, SEEK_END);
 	flash_sz = ftell(fd);
 	fclose(fd);
-	dprintf(" * Size: %x (%s)\n", flash_sz, GetSizeReadable(flash_sz));
+	dprintf(" * Size: %X (%s)\n", flash_sz, GetSizeReadable(flash_sz));
 	return 1;
 }
 
@@ -82,28 +82,28 @@ void try_rawdump4g(char* filename)
 		dprintf("ERROR: Unable to open %s for writing\n", filename);
 		return;
 	}
-		dprintf("%s opened OK, attempting to read 0x%x bytes (%s) from flash...\n", filename, flash_sz, GetSizeReadable(flash_sz));
+		dprintf("%s opened OK, attempting to read 0x%X bytes (%s) from flash...\n", filename, flash_sz, GetSizeReadable(flash_sz));
 		for(i = 0; i < TTL_REPS; i++)
 		{
 			ReadFile(flash, buf, BUF_SIZE, &bRead, NULL);
 			if(bRead != BUF_SIZE)
-				dprintf("\rerror reading 0x%x bytes at offset 0x%x (read: 0x%x bytes)!\n", BUF_SIZE, totalBytes, bRead);
+				dprintf("\rerror reading 0x%X bytes at offset 0x%X (read: 0x%X bytes)!\n", BUF_SIZE, totalBytes, bRead);
 			WriteFile(outf, buf, BUF_SIZE, &bWrote, NULL);
 			if(bWrote != BUF_SIZE)
-				dprintf("\rerror writing 0x%x bytes at offset 0x%x (wrote: 0x%x bytes)!\n", BUF_SIZE, totalBytes, bWrote);
+				dprintf("\rerror writing 0x%X bytes at offset 0x%X (wrote: 0x%X bytes)!\n", BUF_SIZE, totalBytes, bWrote);
 			totalBytes += BUF_SIZE;
 			totalRead += bRead;
 			totalWrote += bWrote;
 			if(i%0x20) // only update this every 32 buffer fills to speed things along...
-				dprintf("\rProcessed 0x%08x of 0x%08x bytes (%3.2f %%)", totalBytes, flash_sz, (((float)totalBytes / (float)flash_sz) * 100));
+				dprintf("\rProcessed 0x%X of 0x%X bytes (%3.2f %%)", totalBytes, flash_sz, (((float)totalBytes / (float)flash_sz) * 100));
 		}
 		dprintf("\r");
 		CloseHandle(outf);
 		CloseHandle(flash);
 		if (totalRead - totalWrote == 0)
-			dprintf("\nDone! successfully dumped 0x%x bytes to %s\n", totalBytes, filename);
+			dprintf("\nDone! successfully dumped 0x%X bytes to %s\n", totalBytes, filename);
 		else
-			dprintf("\nDone! read 0x%x bytes from NAND, wrote 0x%x bytes to %s\n", totalRead, totalWrote, filename);
+			dprintf("\nDone! read 0x%X bytes from NAND, wrote 0x%X bytes to %s\n", totalRead, totalWrote, filename);
 }
 
 void try_rawflash4g(char* filename)

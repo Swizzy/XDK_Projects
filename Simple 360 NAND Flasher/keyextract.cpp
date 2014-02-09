@@ -23,6 +23,26 @@ void PrintDash()
 	dprintf("Current Dashboard: %d.%d.%d.%d\n", XboxKrnlVersion->Major, XboxKrnlVersion->Minor, XboxKrnlVersion->Build, XboxKrnlVersion->Qfe);
 }
 
+PVOID resolveFunction(PCHAR szModuleName, DWORD dwOrdinal)
+{
+	PVOID pProc = NULL;
+	HANDLE hModuleHandle;
+	if(NT_SUCCESS(XexGetModuleHandle(szModuleName, &hModuleHandle)))
+		XexGetProcedureAddress(hModuleHandle, dwOrdinal, &pProc);
+	return pProc;
+}
+
+pldata ldat;
+
+void PrintDLVersion()
+{
+	ldat = (pldata)resolveFunction(MODULE_LAUNCH, DL_ORDINALS_LDAT);
+	if (ldat != NULL)
+		dprintf("Current DashLaunch version: %hu.%02hu (%hu)\n", ldat->versionMaj, ldat->versionMin, ldat->svnVer);
+	else
+		dprintf("Current DashLaunch version: Not Running\n");
+}
+
 bool GetCPUKey()
 {
 	PBYTE buf = (PBYTE)XPhysicalAlloc(0x10, MAXULONG_PTR, 0, MEM_LARGE_PAGES|PAGE_READWRITE|PAGE_NOCACHE);
@@ -30,11 +50,14 @@ bool GetCPUKey()
 	{
 		unsigned long long dest = 0x8000000000000000ULL | ((DWORD)MmGetPhysicalAddress(buf)&0xFFFFFFFF);
 		ZeroMemory(buf, 0x10);
-		if(HvxPeek(0x20ULL, dest, 0x10ULL) == SYSCALL_KEY)
+		unsigned long long ret = HvxPeek(0x20ULL, dest, 0x10ULL);
+		if(ret == SYSCALL_KEY || ret == dest)
 		{
 			memcpy(keybuf, buf, 0x10);
 			return true;
 		}
+		else
+			dprintf("SysCall Return value: 0x%llX\n", ret);
 	}
 	return false;
 }
