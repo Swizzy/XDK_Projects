@@ -12,8 +12,9 @@ void  __cdecl dprintf(const char* strFormat, ...)
 	va_start( pArglist, strFormat );
 	vsnprintf_s(buf, 512, strFormat, pArglist);
 	va_end( pArglist );
-	const CHAR* ignore = "\r";
-	if (strncmp(strFormat, ignore, strlen(ignore)) != 0)
+	const CHAR* ignore = "\rprocessing";
+	const CHAR* ignore2 = "\rProcessed";
+	if (strncmp(strFormat, ignore, strlen(ignore)) != 0 && strncmp(strFormat, ignore2, strlen(ignore2)) != 0)
 	{
 		fopen_s(&flog, "game:\\Simple 360 NAND Flasher.log", "a");
 		if (flog != NULL)

@@ -1,5 +1,5 @@
-Simple 360 NAND Flasher By Swizzy v1.4 (BETA)
-*********************************************
+Simple 360 NAND Flasher By Swizzy v1.4b (BETA)
+**********************************************
 
 ** Please note that this is an open BETA, it have been tested by me and a few friends, but... i don't take any
 responsibility for possible bricks, make sure you understand this before you use this new version! **
@@ -61,6 +61,11 @@ This feature requires that you have dashlaunch 3.01 or later installed, if you d
 *************
 * Changelog *
 *************
+v1.4b (BETA)
+ - Fixed: It'll now properly show you when it detected a bad block that could not be recovered, if it could be recovered it'll mention that aswell
+ - Fixed: Some output on screen wasn't saved to the log (apart from the progress indication which is quite useless)
+ - Fixed: Some messages would be added after the progress indication while in NAND mode instead of overwriting the progress indication (it's now shown correctly and logged!)
+
 v1.4 (BETA)
  - Changed: CPUKey Extraction now also works with Dashlaunch 3.08 and later
  - Changed: The message shown when CPUKey Extraction fails nolonger mentions old dashboards, but instead mentions incompatible Dashlaunch version...

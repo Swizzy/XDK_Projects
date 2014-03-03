@@ -363,7 +363,7 @@ VOID __cdecl main()
 	write = fexists("game:\\updflash.bin");
 	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
 
-	dprintf("Simple 360 NAND Flasher by Swizzy v1.4 (BETA)\n\n");
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n\n");
 
 	dprintf(" * Detecting NAND Type...\n");
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND

@@ -67,14 +67,14 @@ int sfcx_read_page(unsigned char *data, int address, int raw)
 	if (!SFCX_SUCCESS(status))
 	{
 		if (status & STATUS_BB_ER)
-			dprintf(" ! SFCX: Bad block found at %08X\n", sfcx_address_to_block(address));
+			dprintf("\r ! SFCX: Bad block found at 0x%X\n", sfcx_address_to_block(address));
 		else if (status & STATUS_ECC_ER)
-			//	dprintf(" ! SFCX: (Corrected) ECC error at address %08X: %08X\n", address, status);
+			//	dprintf("\r ! SFCX: (Corrected) ECC error at address %X: %X\n", address, status);
 			status = status;
 		else if (!raw && (status & STATUS_ILL_LOG))
-			dprintf(" ! SFCX: Illegal logical block at %08X (status: %08X)\n", sfcx_address_to_block(address), status);
+			dprintf("\r ! SFCX: Illegal logical block at 0x%X (status: 0x%X)\n", sfcx_address_to_block(address), status);
 		else
-			dprintf(" ! SFCX: Unknown error at address %08X: %08X. Please worry.\n", address, status);
+			dprintf("\r ! SFCX: Unknown error at address 0x%X: 0x%X. Please worry.\n", address, status);
 	}
 
 	// Set internal page buffer pointer to 0
@@ -136,7 +136,7 @@ int sfcx_write_page(unsigned char *data, int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	if (!SFCX_SUCCESS(status))
-		dprintf(" ! SFCX: Unexpected sfcx_write_page status %08X\n", status);
+		dprintf("\r ! SFCX: Unexpected sfcx_write_page status 0x%X\n", status);
 
 	// Disable Writes
 	sfcx_writereg(SFCX_CONFIG, sfcx_readreg(SFCX_CONFIG) & ~CONFIG_WP_EN);
@@ -203,7 +203,7 @@ int sfcx_erase_block(int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	//if (!SFCX_SUCCESS(status))
-	//	dprintf(" ! SFCX: Unexpected sfcx_erase_block status %08X\n", status);
+	//	dprintf("\r ! SFCX: Unexpected sfcx_erase_block status 0x%X\n", status);
 	sfcx_writereg(SFCX_STATUS, 0xFF);
 
 	// Disable Writes
@@ -426,7 +426,7 @@ int rawflash_writeImage(int len, FILE * fd)
 		status = sfcx_read_block(blockbuf, addr, 1);
 		if((sfcx_is_pagevalid(blockbuf) == 0) || (sfcx_is_pagevalid(&blockbuf[secondPgOffset]) == 0))
 			status = status | STATUS_BB_ER;
-		r = fread( blockbuf, readsz, 1, fd);
+		r = fread(blockbuf, readsz, 1, fd);
 		if (r < 0)
 		{
 			dprintf("\rERROR: failed to read %d bytes from file\n\n",readsz);
@@ -434,30 +434,25 @@ int rawflash_writeImage(int len, FILE * fd)
 		}
 		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0)
 		{
-			addr = i*sfc.block_sz_phys;
-			addrphy = i*sfc.block_sz;
-			printf("block 0x%X seems bad, status 0x%X\n", i, status);
-			sfcx_erase_block(addrphy);
-			status = sfcx_erase_block(addrphy);
-		}
-		if((status & (STATUS_BB_ER|STATUS_ECC_ER|STATUS_WR_ER)) == 0)
-		{
-			addr = i*sfc.block_sz_phys;
-			addrphy = i*sfc.block_sz;
-			sfcx_erase_block(addrphy);
-			sfcx_write_block(blockbuf, addrphy);
-		}
-		else
-			printf("Block cannot be recovered (A.K.A it's really bad)\n");
-		/*if((status & (STATUS_BB_ER|STATUS_ECC_ER)) == 0)
-		{
-			addr = i*sfc.block_sz_phys;
-			addrphy = i*sfc.block_sz;
-			sfcx_erase_block(addrphy);
-			sfcx_write_block(blockbuf, addrphy);
+			dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);
+			dprintf("Attempting to recover the block...\n");
+			sfcx_erase_block(addr);
+			status = sfcx_erase_block(addr);
+			if (status == 0x200)
+			{
+				dprintf("Block recovered! (A.K.A The block wasn't bad in the first place...)\n");
+				status = sfcx_write_block(blockbuf, addr);
+			}
+			else
+				dprintf("Block cannot be recovered! (A.K.A it's really bad)\n");
 		}
 		else
-			dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);*/
+		{			
+			addr = i*sfc.block_sz_phys;
+			addrphy = i*sfc.block_sz;
+			sfcx_erase_block(addrphy);
+			status = sfcx_write_block(blockbuf, addrphy);
+		}
 		i++;
 	}
 	dprintf("\r\n\n");
@@ -471,7 +466,7 @@ int rawflash_readImage(int len, FILE * fd)
 	int addr, status;
 	int readsz = sfc.pages_in_block*sfc.page_sz_phys;
 	int numblocks = (len/sfc.block_sz_phys);
-	blockbuf = malloc(readsz);
+	blockbuf = (unsigned char*)malloc(readsz);
 	if(blockbuf == NULL)
 	{
 		dprintf("ERROR: unable to allocate 0x%X bytes for a buffer!\n", readsz);
@@ -588,7 +583,7 @@ unsigned int sfcx_init(void)
 		switch ((config >> 4) & 0x3)
 		{
 		case 0: // Unsupported 8MB?
-			dprintf(" ! SFCX: Unsupported Type A-0\n");
+			dprintf("\r ! SFCX: Unsupported Type A-0\n");
 			Sleep(5);
 			return 1;
 
@@ -634,7 +629,7 @@ unsigned int sfcx_init(void)
 			{
 				// Unsupported
 				sfc.meta_type = META_TYPE_0;
-				dprintf(" ! SFCX: Unsupported Type B-0\n");
+				dprintf("\r ! SFCX: Unsupported Type B-0\n");
 				Sleep(5);
 				return 2;
 			}
@@ -700,7 +695,7 @@ unsigned int sfcx_init(void)
 		break;
 
 	default:
-		dprintf(" ! SFCX: Unsupported Type\n");
+		dprintf("\r ! SFCX: Unsupported Type\n");
 		Sleep(5);
 		return 3;
 	}
@@ -721,14 +716,14 @@ unsigned int sfcx_init(void)
 
 	meta_type = sfcx_read_metadata_type();
 	if (meta_type == -1){
-	dprintf(" ! SFCX: Meta Type detection error\n");
+	dprintf("\r ! SFCX: Meta Type detection error\n");
 	delay(5);
 	return 4;
 	}
 
 	if (meta_type != sfc.meta_type){
-	dprintf(" ! SFCX: Meta Type detection difference\n");
-	dprintf(" ! SFCX: expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
+	dprintf("\r ! SFCX: Meta Type detection difference\n");
+	dprintf("\r ! SFCX: expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
 	sfc.meta_type = meta_type;
 	}
 
@@ -743,22 +738,22 @@ void sfcx_setconf(unsigned int config) { sfcx_writereg(SFCX_CONFIG, config); }
 
 void sfcx_printinfo(unsigned int config)
 {
-	dprintf("   config register     = %08X\n", config);
+	dprintf("   config register     = %X\n", config);
 
-	dprintf("   sfc:page_sz         = %08X\n", sfc.page_sz);
-	dprintf("   sfc:meta_sz         = %08X\n", sfc.meta_sz);
-	dprintf("   sfc:page_sz_phys    = %08X\n", sfc.page_sz_phys);
+	dprintf("   sfc:page_sz         = %X\n", sfc.page_sz);
+	dprintf("   sfc:meta_sz         = %X\n", sfc.meta_sz);
+	dprintf("   sfc:page_sz_phys    = %X\n", sfc.page_sz_phys);
 
-	dprintf("   sfc:pages_in_block  = %08X\n", sfc.pages_in_block);
-	dprintf("   sfc:block_sz        = %08X\n", sfc.block_sz);
-	dprintf("   sfc:block_sz_phys   = %08X\n", sfc.block_sz_phys);
+	dprintf("   sfc:pages_in_block  = %X\n", sfc.pages_in_block);
+	dprintf("   sfc:block_sz        = %X\n", sfc.block_sz);
+	dprintf("   sfc:block_sz_phys   = %X\n", sfc.block_sz_phys);
 
 	dprintf("   sfc:size_mb         = %dMB\n", sfc.size_mb);
-	dprintf("   sfc:size_bytes      = %08X\n", sfc.size_bytes);
-	dprintf("   sfc:size_bytes_phys = %08X\n", sfc.size_bytes_phys);
+	dprintf("   sfc:size_bytes      = %X\n", sfc.size_bytes);
+	dprintf("   sfc:size_bytes_phys = %X\n", sfc.size_bytes_phys);
 
-	dprintf("   sfc:size_pages      = %08X\n", sfc.size_pages);
-	dprintf("   sfc:size_blocks     = %08X\n", sfc.size_blocks);
+	dprintf("   sfc:size_pages      = %X\n", sfc.size_pages);
+	dprintf("   sfc:size_blocks     = %X\n", sfc.size_blocks);
 	dprintf("\n");
 }
 
