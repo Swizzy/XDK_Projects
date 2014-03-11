@@ -24,7 +24,7 @@
     <RootNamespace>ArcadeLicenseCheck</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -49,21 +49,21 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
+  <ImportGroup Label="ExtensionSettings"/>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros"/>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">Release\</OutDir>
@@ -74,26 +74,11 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">Release_Russian\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">Release_Portuguese\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">Release_Italian\</IntDir>
-    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">xe:\Samples\$(ProjectName)</RemoteRoot>
-    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">xe:\Samples\$(ProjectName)</RemoteRoot>
-    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">xe:\Samples\$(ProjectName)</RemoteRoot>
-    <RemoteRoot Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">xe:\Samples\$(ProjectName)</RemoteRoot>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'" />
-    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">$(OutDir)Default.xex</ImageXexOutput>
-    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">$(OutDir)Default.xex</ImageXexOutput>
-    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">$(OutDir)Default.xex</ImageXexOutput>
-    <ImageXexOutput Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">$(OutDir)Default.xex</ImageXexOutput>
+    <RemoteRoot>xe:\Samples\$(ProjectName)</RemoteRoot>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules/>
+    <CodeAnalysisRuleAssemblies/>
+    <ImageXexOutput>$(OutDir)Default.xex</ImageXexOutput>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">
     <ClCompile>
@@ -308,21 +293,15 @@
     </Deploy>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Automation.cpp" />
+    <ClCompile Include="Automation.cpp"/>
     <ClCompile Include="Corona4G.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">CompileAsC</CompileAs>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="keyextract.cpp" />
-    <ClCompile Include="nandflasher_1.cpp" />
-    <ClCompile Include="OutputConsole.cpp" />
+    <ClCompile Include="keyextract.cpp"/>
+    <ClCompile Include="nandflasher_1.cpp"/>
+    <ClCompile Include="OutputConsole.cpp"/>
     <ClCompile Include="xenon_sfcx.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">CompileAsC</CompileAs>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,34 +311,39 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Automation.h" />
-    <ClInclude Include="Corona4G.h" />
-    <ClInclude Include="keyextract.h" />
-    <ClInclude Include="Language.h" />
-    <ClInclude Include="OutputConsole.h" />
-    <ClInclude Include="Translations\Default.h" />
-    <ClInclude Include="Translations\Italian.h" />
-    <ClInclude Include="Translations\Portuguese.h" />
-    <ClInclude Include="Translations\Russian.h" />
-    <ClInclude Include="xenon_sfcx.h" />
+    <ClInclude Include="Automation.h"/>
+    <ClInclude Include="Corona4G.h"/>
+    <ClInclude Include="keyextract.h"/>
+    <ClInclude Include="Language.h"/>
+    <ClInclude Include="OutputConsole.h"/>
+    <ClInclude Include="Translations\Default.h"/>
+    <ClInclude Include="Translations\Italian.h"/>
+    <ClInclude Include="Translations\Portuguese.h"/>
+    <ClInclude Include="Translations\Russian.h"/>
+    <ClInclude Include="xenon_sfcx.h"/>
   </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="Media\Fonts\font.rdf">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">Create a bundled resource file from  %(FullPath)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">Create a bundled resource file from  %(FullPath)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">Create a bundled resource file from  %(FullPath)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">Create a bundled resource file from  %(FullPath)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">$(OutDir)\font.xpr;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">$(OutDir)\font.xpr;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">$(OutDir)\font.xpr;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">$(OutDir)\font.xpr;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <Choose>
+    <When Condition="'$(Configuration)'=='Release_Russian'">
+      <ItemGroup>
+        <CustomBuild Include="Media\Fonts\ufont.rdf">
+          <FileType>Document</FileType>
+          <Command>bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
+          <Message>Create a bundled resource file from  %(FullPath)</Message>
+          <Outputs>$(OutDir)\font.xpr;%(Outputs)</Outputs>
+        </CustomBuild>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <CustomBuild Include="Media\Fonts\font.rdf">
+          <FileType>Document</FileType>
+          <Command>bundler "%(FullPath)" -o "$(OutDir)\font.xpr"</Command>
+          <Message>Create a bundled resource file from  %(FullPath)</Message>
+          <Outputs>$(OutDir)\font.xpr;%(Outputs)</Outputs>
+        </CustomBuild>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+  <ImportGroup Label="ExtensionTargets"/>
 </Project>
