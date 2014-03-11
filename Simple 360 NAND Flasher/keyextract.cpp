@@ -20,7 +20,7 @@ unsigned long long HvxPeek(unsigned long long SourceAddress, unsigned long long 
 
 void PrintDash()
 {
-	dprintf("Current Dashboard: %d.%d.%d.%d\n", XboxKrnlVersion->Major, XboxKrnlVersion->Minor, XboxKrnlVersion->Build, XboxKrnlVersion->Qfe);
+	dprintf(MSG_CURRENT_DASHBOARD, XboxKrnlVersion->Major, XboxKrnlVersion->Minor, XboxKrnlVersion->Build, XboxKrnlVersion->Qfe);
 }
 
 PVOID resolveFunction(PCHAR szModuleName, DWORD dwOrdinal)
@@ -38,9 +38,9 @@ void PrintDLVersion()
 {
 	ldat = (pldata)resolveFunction(MODULE_LAUNCH, DL_ORDINALS_LDAT);
 	if (ldat != NULL)
-		dprintf("Current DashLaunch version: %hu.%02hu (%hu)\n", ldat->versionMaj, ldat->versionMin, ldat->svnVer);
+		dprintf(MSG_CURRENT_DASHLAUNCH, ldat->versionMaj, ldat->versionMin, ldat->svnVer);
 	else
-		dprintf("Current DashLaunch version: Not Running\n");
+		dprintf(MSG_DASHLAUNCH_NOT_RUNNING);
 }
 
 bool GetCPUKey()
@@ -57,14 +57,14 @@ bool GetCPUKey()
 			return true;
 		}
 		else
-			dprintf("SysCall Return value: 0x%llX\n", ret);
+			dprintf(MSG_SYSCALL_RETURN_VALUE, ret);
 	}
 	return false;
 }
 
 void PrintCPUKey()
 {
-	dprintf("Your CPUKey is: ");
+	dprintf(MSG_YOUR_CPUKEY_IS);
 	int i;
 	for (i = 0; i < 0x10; i++)
 		dprintf("%02X", keybuf[i]);
@@ -81,6 +81,6 @@ void SaveCPUKey(const char* file)
 		for (i = 0; i < 0x10; i++)
 			fprintf(fd, "%02X", keybuf[i]);
 		fclose(fd);
-		dprintf(" * CPUKey sucessfully saved to: %s\n", file);
+		dprintf(MSG_CPUKEY_SUCCESSFULLY_SAVED, file);
 	}
 }

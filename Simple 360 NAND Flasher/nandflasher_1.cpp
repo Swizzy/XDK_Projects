@@ -57,33 +57,33 @@ int HasSpare(char* filename)
 {
 	BYTE buf[0x630];
 	FILE* fd;
-	dprintf("Checking %s for spare data... ", filename);
+	dprintf(MSG_CHECKING_FOR_SPARE, filename);
 	if (fopen_s(&fd, filename, "rb") != 0)
 	{		
-		dprintf("\nERROR: Unable to open %s for reading!\n", filename);
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_READING, filename);
 		return -1;
 	}
 	if (fread_s(buf, 0x630, 0x630, 1, fd) != 1)
 	{
-		dprintf("\nERROR: Unable to read 0x630 bytes from %s!\n", filename);
+		dprintf(MSG_ERROR MSG_UNABLE_TO_READ_0X630_BYTES_FROM, filename);
 		fclose(fd);
 		return -1;
 	}
 	fclose(fd);
 	if (buf[0] != 0xFF && buf[1] != 0x4F)
 	{
-		dprintf("\nERROR: %s Doesn't contain the magic bytes expected for an Xbox 360 NAND image, aborting!\n", filename);
+		dprintf(MSG_ERROR MSG_BAD_MAGIC, filename);
 		return -1;
 	}	
 	for (int offset = 0; offset < 0x630; offset += 0x210)
 	{
 		if (CheckPage(&buf[offset]))
 		{
-			dprintf("Spare data detected!\n", filename);
+			dprintf(MSG_SPARE_DETECTED, filename);
 			return 0;
 		}
 	}
-	dprintf("No spare data detected!\n", filename);
+	dprintf(MSG_SPARE_NOT_DETECTED, filename);
 	return 1;
 }
 
@@ -91,17 +91,17 @@ void AutoCountdown(int timeout = 5)
 {
 	for (; timeout > 0; timeout--)
 	{
-		dprintf("\rYou have %d Seconds to power off your console before the code continues...", timeout);
+		dprintf(MSG_YOU_HAVE_SECONDS_BEFORE_CONTINUE, timeout);
 		Sleep(1000);
 	}
-	dprintf("Time is up! Hope you didn't make a misstake! ;)\n");
+	dprintf(MSG_TIMES_UP);
 }
 
 VOID flasher()
 {
 	if (!AutoMode)
 	{
-		dprintf("Press Start to flash your nand or press anything else to exit!\n\n");
+		dprintf(MSG_PRESS_START_TO_FLASH);
 		for(;;)
 		{
 			m_pGamepad = ATG::Input::GetMergedInput();
@@ -115,7 +115,7 @@ VOID flasher()
 	KillControllers();
 	ClearConsole();
 	time(&start);
-	dprintf("WARNING! DO NOT TOUCH YOUR CONSOLE OR CONTROLLER DURING THE FLASH PROCESS!!\nThe console will reboot when it's done!\n\n");
+	dprintf(MSG_WARNING_DO_NOT_TOUCH_CONSOLE_OR_CONTROLLER);
 	int tmp = HasSpare("game:\\updflash.bin");
 	if (tmp == -1)
 		XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
@@ -126,7 +126,7 @@ VOID flasher()
 		{
 			if (!AutoMode)
 			{
-				dprintf("\n\nWARNING! You are about to flash an image that don't contain SPARE data to a machine that requires it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
+				dprintf(MSG_WARNING_YOU_ARE_ABOUT_TO_FLASH_NO_SPARE_TO_SPARE_CONSOLE);
 				for(;;)
 				{
 					m_pGamepad = ATG::Input::GetMergedInput();
@@ -138,7 +138,7 @@ VOID flasher()
 			}
 			else
 			{
-				dprintf("\n\nWARNING! You are about to flash an image that don't contain SPARE data to a machine that requires it!\nPower off your console to abort!");
+				dprintf(MSG_WARNING_YOU_ARE_ABOUT_TO_FLASH_NO_SPARE_TO_SPARE_CONSOLE_AUTO);
 				AutoCountdown();
 			}
 		}
@@ -154,7 +154,7 @@ VOID flasher()
 		{
 			if (!AutoMode)
 			{
-				dprintf("\n\nWARNING! You are about to flash an image that contains SPARE data to a machine that don't require it!\nIf you know what you are doing Press Start to continue or anything else to exit!\n");
+				dprintf(MSG_WARNING_YOU_ARE_ABOUT_TO_FLASH_SPARE_TO_NO_SPARE_CONSOLE);
 				for(;;)
 				{
 					m_pGamepad = ATG::Input::GetMergedInput();
@@ -166,7 +166,7 @@ VOID flasher()
 			}
 			else
 			{
-				dprintf("\n\nWARNING! You are about to flash an image that contains SPARE data to a machine that don't require it!\nPower off your console to abort!");
+				dprintf(MSG_WARNING_YOU_ARE_ABOUT_TO_FLASH_SPARE_TO_NO_SPARE_CONSOLE_AUTO);
 				AutoCountdown();
 			}
 		}
@@ -174,8 +174,8 @@ VOID flasher()
 	}
 	time(&end);
 	tdiff = difftime(end,start);
-	dprintf("Completed after %4.2f seconds\n", tdiff);
-	dprintf("Rebooting in ");
+	dprintf(MSG_COMPLETED_AFTER_SECONDS, tdiff);
+	dprintf(MSG_REBOOTING_IN);
 	for (int i = 5; i > 0; i--)
 	{
 		dprintf("%i", i);
@@ -185,7 +185,7 @@ VOID flasher()
 			dprintf(".");
 		}
 	}
-	dprintf("BYE!");
+	dprintf(MSG_BYE);
 	HalReturnToFirmware(2);
 }
 
@@ -195,7 +195,7 @@ VOID dumper(char *filename)
 	{
 		if (fexists(filename))
 		{
-			dprintf(" **** WARNING: %s already exists! ****\nPress Start if you want to overwrite this file now!", filename);
+			dprintf(MSG_PRESS_START_TO_OVERWRITE_EXISTING_FILE, filename);
 			for(;;)
 			{
 				m_pGamepad = ATG::Input::GetMergedInput();
@@ -216,9 +216,9 @@ VOID dumper(char *filename)
 		{
 			if (!AutoMode)
 			{
-				dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
-				dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
-				dprintf("Press Back to abort dump process...\n");
+				dprintf(MSG_PRESS_A_TO_DUMP_SYSTEM_ONLY);
+				dprintf(MSG_PRESS_B_TO_DUMP_FULL_NAND);
+				dprintf(MSG_PRESS_BACK_TO_ABORT_DUMP);
 				for(;;)
 				{
 					m_pGamepad = ATG::Input::GetMergedInput();
@@ -233,10 +233,10 @@ VOID dumper(char *filename)
 						XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
 					else if (m_pGamepad->wPressedButtons)
 					{
-						dprintf("Try again:\n");
-						dprintf("Press A to Dump System Partition only (64MB, Recommended!)\n");
-						dprintf("Press B to Dump Full NAND (256MB/512MB, this may take a while...)\n");
-						dprintf("Press Back to abort dump process...\n");
+						dprintf(MSG_TRY_AGAIN);
+						dprintf(MSG_PRESS_A_TO_DUMP_SYSTEM_ONLY);
+						dprintf(MSG_PRESS_B_TO_DUMP_FULL_NAND);
+						dprintf(MSG_PRESS_BACK_TO_ABORT_DUMP);
 					}
 				}
 			}
@@ -246,7 +246,7 @@ VOID dumper(char *filename)
 					size = 256;
 				else
 					size = 512;
-				dprintf(" * %d MB NAND Detected! Setting dump size to 64MB!", size);
+				dprintf(MSG_BB_DETECTED_SETTING_64MB, size);
 				size = RAW_NAND_64;
 			}
 		}
@@ -265,7 +265,7 @@ VOID dumper(char *filename)
 	}
 	time(&end);
 	tdiff = difftime(end,start);
-	dprintf("Completed after %4.2f seconds\n", tdiff);
+	dprintf(MSG_COMPLETED_AFTER_SECONDS, tdiff);
 	dumped = true;
 }
 
@@ -273,15 +273,15 @@ void PrintExecutingCountdown(int max)
 {
 	for (; max > 0; max--)
 	{
-		dprintf("\rExecuting command in %d seconds", max);
+		dprintf(MSG_EXECUTING_COMMAND_IN_SECONDS, max);
 		Sleep(1000);
 	}
-	dprintf("\rExecuting command!\n");
+	dprintf(MSG_EXECUTING_COMMAND);
 }
 
 void TryAutoMode()
 {
-	dprintf(" * Looking for simpleflasher.cmd for automatic features...\n");
+	dprintf(MSG_LOOKING_FOR_CMD_FILE_FOR_AUTO_MODE);
 	if (fexists("game:\\simpleflasher.cmd"))
 	{
 		AutoMode = true;
@@ -289,24 +289,24 @@ void TryAutoMode()
 		int mode = CheckMode("game:\\simpleflasher.cmd");
 		if (mode == 1) //AutoDump
 		{
-			dprintf(" * AutoDump command found!\n * Executing command!\n\n");
+			dprintf(MSG_AUTO_DUMP_FOUND);
 			dumper("game:\\flashdmp.bin");
 			GenerateHash("game:\\flashdmp.bin");
 		}
 		else if (mode == 2) //AutoFlash
 		{
-			dprintf(" * AutoFlash command found!\n\n");
+			dprintf(MSG_AUTO_FLASH_FOUND);
 			if (CheckHash("game:\\updflash.bin"))
 			{
 				PrintExecutingCountdown(5);
 				flasher();
 			}
 			else
-				dprintf(" ! ERROR: Hash don't match, or file don't exist... Aborting!\n");
+				dprintf(MSG_ERROR MSG_HASH_DONT_MATCH);
 		}
 		else if (mode == 3) //AutoSafeFlash
 		{
-			dprintf(" * AutoSafeFlash command found!\n\n");
+			dprintf(MSG_AUTO_SAFE_FLASH_FOUND);
 			if (CheckHash("game:\\updflash.bin"))
 			{
 				PrintExecutingCountdown(5);
@@ -315,22 +315,22 @@ void TryAutoMode()
 				flasher();
 			}
 			else
-				dprintf(" ! ERROR: Hash don't match, or file don't exist... Aborting!\n");
+				dprintf(MSG_ERROR MSG_HASH_DONT_MATCH);
 		}
 		else if (mode == 4) //AutoExit, only want key...
 		{
-			dprintf(" * AutoExit command found!\n\n");
+			dprintf(MSG_AUTO_EXIT_FOUND);
 			PrintExecutingCountdown(5);
 		}
 		else if (mode == 5) //AutoReboot Hard Reset
 		{
-			dprintf(" * AutoReboot command found!\n\n");
+			dprintf(MSG_AUTO_REBOOT_FOUND);
 			PrintExecutingCountdown(5);
 			HalReturnToFirmware(2);
 		}
 		else
 		{
-			dprintf("! ERROR: Bad command file please read the readme!\nReturning to manual mode!\n");
+			dprintf(MSG_BAD_COMMAND_FILE_RETURNING_TO_MANUAL_MODE);
 			AutoMode = false;
 			return;
 		}
@@ -339,18 +339,18 @@ void TryAutoMode()
 	}
 	else
 	{
-		dprintf("game:\\simpleflasher.cmd NOT Found!\n * Entering Manual mode!\n\n");
+		dprintf(MSG_COMMAND_FILE_NOT_FOUND_ENTERING_MANUAL_MODE);
 	}
 }
 
 void PrintConsoleInfo(bool GotKey)
 {
-	dprintf("\n============= Console information: =============\n\n");
+	dprintf(MSG_CONSOLE_INFO_LINE);
 	PrintDash();
 	PrintDLVersion();
 	if (GotKey)
 		PrintCPUKey();
-	dprintf("\n================================================\n\n");
+	dprintf(MSG_CONSOLE_INFO_BOTTOM);
 }
 
 //--------------------------------------------------------------------------------------
@@ -363,14 +363,20 @@ VOID __cdecl main()
 	write = fexists("game:\\updflash.bin");
 	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
 
+	
+#ifdef TRANSLATION_BY
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n");
+	dprintf(TRANSLATION_BY);
+#else
 	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n\n");
+#endif
 
-	dprintf(" * Detecting NAND Type...\n");
+	dprintf(MSG_DETECTING_NAND_TYPE);
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND
 	if (!MMC)
 		config = sfcx_getconf();
 	bool GotKey = false;
-	dprintf(" * Attempting to grab CPUKey...\n");
+	dprintf(MSG_ATTEMTPING_TO_GRAB_CPUKEY);
 	if (GetCPUKey())
 	{
 		SaveCPUKey("game:\\cpukey.txt");
@@ -378,7 +384,7 @@ VOID __cdecl main()
 	}
 	else
 	{
-		dprintf(" ! ERROR: Incompatible Dashlaunch version detected! Use XeLL instead!\n");
+		dprintf(MSG_ERROR MSG_INCOMPATIBLE_DASHLAUNCH);
 		GotKey = false;
 	}
 	PrintConsoleInfo(GotKey);
@@ -387,20 +393,20 @@ VOID __cdecl main()
 	{
 		if (!MMC)
 		{
-			dprintf("Press A if you want to flash your nand with Rawflash v5\n");
-			dprintf("Press B if you want to safeflash your nand with Rawflash v5 (Dump + Write)\n");
+			dprintf(MSG_PRESS_A_TO_FLASH_RAWFLASH);
+			dprintf(MSG_PRESS_B_TO_SAFE_FLASH_RAWFLASH);
 		}
 		else
 		{
-			dprintf("Press A if you want to flash your nand with Rawflash4G v1\n");
-			dprintf("Press B if you want to safeflash your nand with Rawflash4G v1 (Dump + Write)\n");
+			dprintf(MSG_PRESS_A_TO_FLASH_RAWFLASH4G);
+			dprintf(MSG_PRESS_B_TO_SAFE_FLASH_RAWFLASH4G);
 		}
 	}
 	if (!MMC)
-		dprintf("Press X if you want to dump your nand with Rawdump v1\n");
+		dprintf(MSG_PRESS_X_TO_DUMP_RAWFLASH);
 	else
-		dprintf("Press X if you want to dump your nand with Rawdump4G v1\n");
-	dprintf("If you press anything else the application will close...\n");
+		dprintf(MSG_PRESS_X_TO_DUMP_RAWFLASH4G);
+	dprintf(MSG_PRESS_ANY_OTHER_BUTTON_TO_EXIT);
 	for(;;)
 	{
 		m_pGamepad = ATG::Input::GetMergedInput();
@@ -418,7 +424,7 @@ VOID __cdecl main()
 			else if ((m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_X) && (!dumped))
 			{
 				dumper("game:\\flashdmp.bin");
-				dprintf("Press any button to exit!\n");
+				dprintf(MSG_PRESS_ANY_BUTTON_TO_EXIT);
 			}
 			else if (m_pGamepad->wPressedButtons) { break; }
 		}

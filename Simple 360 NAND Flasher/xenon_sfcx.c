@@ -67,14 +67,14 @@ int sfcx_read_page(unsigned char *data, int address, int raw)
 	if (!SFCX_SUCCESS(status))
 	{
 		if (status & STATUS_BB_ER)
-			dprintf("\r ! SFCX: Bad block found at 0x%X\n", sfcx_address_to_block(address));
+			dprintf(MSG_SFCX_ERROR MSG_BAD_BLOCK_FOUND_AT, sfcx_address_to_block(address));
 		else if (status & STATUS_ECC_ER)
-			//	dprintf("\r ! SFCX: (Corrected) ECC error at address %X: %X\n", address, status);
+			//	dprintf(MSG_SFCX_ERROR "(Corrected) ECC error at address %X: %X\n", address, status);
 			status = status;
 		else if (!raw && (status & STATUS_ILL_LOG))
-			dprintf("\r ! SFCX: Illegal logical block at 0x%X (status: 0x%X)\n", sfcx_address_to_block(address), status);
+			dprintf(MSG_SFCX_ERROR MSG_ILLEGAL_LOGICAL_BLOCK, sfcx_address_to_block(address), status);
 		else
-			dprintf("\r ! SFCX: Unknown error at address 0x%X: 0x%X. Please worry.\n", address, status);
+			dprintf(MSG_SFCX_ERROR MSG_UNKNOWN_ERROR_AT_ADDRESS, address, status);
 	}
 
 	// Set internal page buffer pointer to 0
@@ -136,7 +136,7 @@ int sfcx_write_page(unsigned char *data, int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	if (!SFCX_SUCCESS(status))
-		dprintf("\r ! SFCX: Unexpected sfcx_write_page status 0x%X\n", status);
+		dprintf(MSG_SFCX_ERROR MSG_UNEXPECTED_SFCX_WRITE_PAGE_STATUS, status);
 
 	// Disable Writes
 	sfcx_writereg(SFCX_CONFIG, sfcx_readreg(SFCX_CONFIG) & ~CONFIG_WP_EN);
@@ -203,7 +203,7 @@ int sfcx_erase_block(int address)
 
 	status = sfcx_readreg(SFCX_STATUS);
 	//if (!SFCX_SUCCESS(status))
-	//	dprintf("\r ! SFCX: Unexpected sfcx_erase_block status 0x%X\n", status);
+	//	dprintf(MSG_SFCX_ERROR "Unexpected sfcx_erase_block status 0x%X\n", status);
 	sfcx_writereg(SFCX_STATUS, 0xFF);
 
 	// Disable Writes
@@ -412,7 +412,7 @@ int rawflash_writeImage(int len, FILE * fd)
 	blockbuf = (unsigned char*)malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		dprintf("ERROR: unable to allocate 0x%X bytes for a buffer!\n", readsz);
+		dprintf(MSG_ERROR MSG_UNABLE_TO_ALLOCATE_BUFFER, readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
@@ -420,7 +420,7 @@ int rawflash_writeImage(int len, FILE * fd)
 	while(i < numblocks)
 	{
 		KillControllers();
-		dprintf("\rprocessing block 0x%X of 0x%X (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf(MSG_PROCESSING_BLOCK, i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -429,22 +429,22 @@ int rawflash_writeImage(int len, FILE * fd)
 		r = fread(blockbuf, readsz, 1, fd);
 		if (r < 0)
 		{
-			dprintf("\rERROR: failed to read %d bytes from file\n\n",readsz);
+			dprintf(MSG_ERROR_FAILED_TO_READ_BYTES_FROM_FILE,readsz);
 			return 0;
 		}
 		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0)
 		{
-			dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);
-			dprintf("Attempting to recover the block...\n");
+			dprintf(MSG_BLOCK_SEEMS_BAD, i, status);
+			dprintf(MSG_ATTEMPTING_BLOCK_RECOVERY);
 			sfcx_erase_block(addr);
 			status = sfcx_erase_block(addr);
 			if (status == 0x200)
 			{
-				dprintf("Block recovered! (A.K.A The block wasn't bad in the first place...)\n");
+				dprintf(MSG_BLOCK_RECOVERED_SUCCESSFULLY);
 				status = sfcx_write_block(blockbuf, addr);
 			}
 			else
-				dprintf("Block cannot be recovered! (A.K.A it's really bad)\n");
+				dprintf(MSG_BLOCK_CANNOT_BE_RECOVERED);
 		}
 		else
 		{			
@@ -469,14 +469,14 @@ int rawflash_readImage(int len, FILE * fd)
 	blockbuf = (unsigned char*)malloc(readsz);
 	if(blockbuf == NULL)
 	{
-		dprintf("ERROR: unable to allocate 0x%X bytes for a buffer!\n", readsz);
+		dprintf(MSG_ERROR MSG_UNABLE_TO_ALLOCATE_BUFFER, readsz);
 		return 0;
 	}
 	if(sfc.meta_type == META_TYPE_2)
 		secondPgOffset = 0x1080; // 0x210*8
 	while(i < numblocks)
 	{
-		dprintf("\rprocessing block 0x%X of 0x%X (%3.2f %%)", i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
+		dprintf(MSG_PROCESSING_BLOCK, i+1, numblocks, ((float)(i + 1) / (float)numblocks) * 100);
 		addr = i*sfc.block_sz;
 		// check first two pages of each block to find out if it's a good block
 		status = sfcx_read_block(blockbuf, addr, 1);
@@ -484,10 +484,10 @@ int rawflash_readImage(int len, FILE * fd)
 			status = status | STATUS_BB_ER;
 		if (fwrite( blockbuf, readsz, 1, fd) < 0)
 		{
-			dprintf("\rERROR: failed to write %d bytes to file\n\n",readsz);
+			dprintf(MSG_ERROR_FAILED_TO_WRITE_BYTES_TO_FILE,readsz);
 			return 0;
 		}
-		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf("\rblock 0x%X seems bad, status 0x%X\n", i, status);
+		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf(MSG_BLOCK_SEEMS_BAD, i, status);
 		i++;
 	}
 	dprintf("\r\n\n");
@@ -501,7 +501,7 @@ void try_rawflash(char *filename)
 	int size;
 	if (fopen_s(&fd, filename, "rb") != 0)
 	{
-		dprintf("File %s not found\n", filename);
+		dprintf(MSG_FILE_NOT_FOUND, filename);
 		return;
 	}
 	dprintf(" * rawflash v5 started (by cOz, modified By Swizzy)\n");
@@ -512,15 +512,15 @@ void try_rawflash(char *filename)
 		size = RAW_NAND_64;
 	else if((size != 0x1080000)&& (size != RAW_NAND_64)) // 16 M size
 	{
-		dprintf("error: %s - size %d is not valid image size!\n", filename, size);
+		dprintf(MSG_ERROR_SIZE_NOT_SUPPORTED, filename, size);
 		fclose(fd);
 		return;
 	}
-	dprintf("%s opened OK, attempting to write 0x%X bytes to flash...\n",filename, size);
+	dprintf(MSG_OPENED_OK_ATTEMPTING_WRITE_TO_FLASH,filename, size);
 	if(rawflash_writeImage(size, fd) == 1)
-		dprintf("image written :D\n");
+		dprintf(MSG_IMAGE_WRITTEN);
 	else
-		dprintf("failed to write image :(\n");
+		dprintf(MSG_FAILED_TO_WRITE_IMAGE);
 
 	fclose(fd);
 	if(blockbuf != NULL)
@@ -529,12 +529,8 @@ void try_rawflash(char *filename)
 
 void try_rawdump(char *filename, int size)
 {
+	dprintf(" * rawdump v1 started (by Swizzy)\n");
 	FILE * fd;
-	if (fopen_s(&fd, filename, "wb") != 0)
-	{
-		dprintf("ERROR: Unable to open %s for write\n", filename);
-		return;
-	}
 	if (size == 0)
 	{
 		size = sfc.size_bytes_phys;
@@ -542,17 +538,21 @@ void try_rawdump(char *filename, int size)
 			size = RAW_NAND_64;
 		else if((size != 0x1080000)&& (size != RAW_NAND_64)) // 16 M size
 		{
-			dprintf("error: size %d is not supported!\n", size);
+			dprintf(MSG_ERROR_SIZE_NOT_SUPPORTED, size);
 			fclose(fd);
 			return;
 		}
 	}
-	dprintf(" * rawdump v1 started (by Swizzy)\n");
-	dprintf("%s opened OK, attempting to read 0x%X bytes from flash...\n",filename, size);
+	if (fopen_s(&fd, filename, "wb") != 0)
+	{
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_WRITING, filename);
+		return;
+	}	
+	dprintf(MSG_OPENED_OK_ATTEMPTING_READ_FROM_FLASH,filename, size);
 	if(rawflash_readImage(size, fd) == 1)
-		dprintf("NAND Dumped! :D\n");
+		dprintf(MSG_IMAGE_DUMPED);
 	else
-		dprintf("failed to dump NAND :(\n");
+		dprintf(MSG_FAILED_TO_DUMP_NAND);
 
 	fclose(fd);
 	if(blockbuf != NULL)
@@ -583,7 +583,7 @@ unsigned int sfcx_init(void)
 		switch ((config >> 4) & 0x3)
 		{
 		case 0: // Unsupported 8MB?
-			dprintf("\r ! SFCX: Unsupported Type A-0\n");
+			dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_A-0);
 			Sleep(5);
 			return 1;
 
@@ -629,7 +629,7 @@ unsigned int sfcx_init(void)
 			{
 				// Unsupported
 				sfc.meta_type = META_TYPE_0;
-				dprintf("\r ! SFCX: Unsupported Type B-0\n");
+				dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_B-0);
 				Sleep(5);
 				return 2;
 			}
@@ -695,7 +695,7 @@ unsigned int sfcx_init(void)
 		break;
 
 	default:
-		dprintf("\r ! SFCX: Unsupported Type\n");
+		dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE);
 		Sleep(5);
 		return 3;
 	}
@@ -716,14 +716,14 @@ unsigned int sfcx_init(void)
 
 	meta_type = sfcx_read_metadata_type();
 	if (meta_type == -1){
-	dprintf("\r ! SFCX: Meta Type detection error\n");
+	dprintf(MSG_SFCX_ERROR "Meta Type detection error\n");
 	delay(5);
 	return 4;
 	}
 
 	if (meta_type != sfc.meta_type){
-	dprintf("\r ! SFCX: Meta Type detection difference\n");
-	dprintf("\r ! SFCX: expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
+	dprintf(MSG_SFCX_ERROR "Meta Type detection difference\n");
+	dprintf(MSG_SFCX_ERROR "expecting type: '%d' detected: '%d'\n", sfc.meta_type, meta_type);
 	sfc.meta_type = meta_type;
 	}
 
@@ -762,9 +762,9 @@ int sfcx_detecttype(void)
 	unsigned int config = sfcx_readreg(0x7FEAC0FC);
 	if (config == 0)
 	{
-		dprintf(" * Detected RAW NAND device!\n * Entering NAND Mode...\n\n");
+		dprintf(MSG_RAW_NAND_DETECTED);
 		return 0;
 	}
-	dprintf(" * Detected MMC NAND device!\n * Entering MMC/Corona v2 [4GB] Mode...\n\n");
+	dprintf(MSG_MMC_NAND_DETECTED);
 	return 1;
 }

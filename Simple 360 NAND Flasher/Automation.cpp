@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include "Language.h"
 
 extern "C" void __cdecl dprintf( const char* strFormat, ... );
 extern "C" void HalReturnToFirmware(unsigned long mode);
@@ -19,8 +20,8 @@ unsigned int calc_crc32(unsigned int& crc, const void* buf, size_t size)
 
 void PrintValue(unsigned int hash, unsigned int hash2)
 {
-	dprintf("\nCalculated value: %08X", hash);
-	dprintf("\nExpected value:   %08X", hash2);
+	dprintf(MSG_CALCULATED_VALUE, hash);
+	dprintf(MSG_EXPECTED_VALUE, hash2);
 	dprintf("\n");
 }
 
@@ -37,7 +38,7 @@ bool CheckCRC32(string file, string hashfile)
 	FILE* f;
 	unsigned int crc = 0;
 	unsigned char buf[4096];
-	dprintf(" * Checking %s Crc32: ", file.c_str());
+	dprintf(MSG_CHECKING_CRC32, file.c_str());
 	fopen_s(&f, file.c_str(), "rb");
 	if (f != NULL)
 	{
@@ -47,7 +48,7 @@ bool CheckCRC32(string file, string hashfile)
 	}
 	else
 	{
-		dprintf("\n ! ERROR Opening %s for reading! Aborting!", file.c_str());
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_READING, file.c_str());
 		return false;
 	}
 	fopen_s(&f, hashfile.c_str(), "r");
@@ -60,7 +61,7 @@ bool CheckCRC32(string file, string hashfile)
 	}
 	else
 	{
-		dprintf("\n ! ERROR Opening %s for reading! Aborting!", hashfile.c_str());
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_READING, hashfile.c_str());
 	}
 	return false;
 }
@@ -70,33 +71,33 @@ void GenerateCRC32(string file)
 	FILE* f;
 	unsigned int crc = 0;
 	unsigned char buf[4096];
-	dprintf("Calculating CRC32 for: %s\n", file.c_str());
+	dprintf(MSG_CALCULATING_CRC32_FOR, file.c_str());
 	fopen_s(&f, file.c_str(), "rb");
 	if (f != NULL)
 	{
 		while (fread(&buf, 1, sizeof(buf), f) == sizeof(buf))		
 			crc = calc_crc32(crc, buf, sizeof(buf));		
 		fclose(f);
-		dprintf("Calculated CRC32 value: %08X\n", crc);
+		dprintf(MSG_CALCULATED_VALUE, crc);
 		string hashfile;
 		unsigned found = file.find_last_of(".");
 		if (found != string::npos)
 			hashfile = file.substr(0, found + 1) + "crc32";
 		else
 			hashfile = file + ".crc32";
-		dprintf(" * Attempting to save the CRC32 value to %s...\n", hashfile.c_str());
+		dprintf(MSG_ATTEMPTING_TO_SAVE_CRC32_TO, hashfile.c_str());
 		fopen_s(&f, hashfile.c_str(), "w");
 		if (f != NULL)
 		{
 			fprintf(f, "%08X", crc);
 			fclose(f);
-			dprintf(" * Sucessfully saved the CRC32 value!\n");
+			dprintf(MSG_SUCCESSFULLY_SAVED_CRC32);
 		}
 		else
-			dprintf(" ! ERROR: Unable to open %s for write\n", hashfile.c_str());
+			dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_WRITING, hashfile.c_str());
 	}
 	else
-		dprintf("\n ! ERROR Opening %s for reading! Aborting!", file.c_str());
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_READING, file.c_str());
 }
 
 //bool CheckSHA1(string file, string hashfile)
@@ -124,13 +125,13 @@ bool CheckHash(string file)
 	if (fexists(file.c_str()))
 	{
 		string tmp = basename + "crc32";
-		dprintf(" * Looking for %s... ", tmp.c_str());		
+		dprintf(MSG_LOOKING_FOR, tmp.c_str());		
 		if (fexists(tmp.c_str()))
 		{
-			dprintf("Found!\n * Checking CRC32 Hash...\n");
+			dprintf(MSG_FOUND_CHECKING_CRC32);
 			return CheckCRC32(file, tmp);
 		}
-		dprintf("NOT Found!\n");
+		dprintf(MSG_NOT_FOUND);
 		/*tmp = basename + "sha1";
 		dprintf("* Looking for %s... ", tmp.c_str());		
 		if (fexists(tmp.c_str()))
@@ -177,6 +178,6 @@ int CheckMode(const char* filename)
 			return 5;
 	}
 	else
-		dprintf(" ! ERROR: Couldn't open %s for read!\n", filename);
+		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_READING, filename);
 	return -1;
 }

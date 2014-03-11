@@ -36,3 +36,5 @@ extern "C"
 void MakeConsole(const char* font, unsigned long BackgroundColor, unsigned long TextColor);
 
 void ClearConsole();
+
+#include "Language.h"
