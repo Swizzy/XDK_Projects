@@ -9,15 +9,29 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AtgFramework", "Common\AtgF
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release_Italian|Xbox 360 = Release_Italian|Xbox 360
+		Release_Portuguese|Xbox 360 = Release_Portuguese|Xbox 360
 		Release_Russian|Xbox 360 = Release_Russian|Xbox 360
 		Release|Xbox 360 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Italian|Xbox 360.ActiveCfg = Release_Italian|Xbox 360
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Italian|Xbox 360.Build.0 = Release_Italian|Xbox 360
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Italian|Xbox 360.Deploy.0 = Release_Italian|Xbox 360
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Portuguese|Xbox 360.ActiveCfg = Release_Portuguese|Xbox 360
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Portuguese|Xbox 360.Build.0 = Release_Portuguese|Xbox 360
+		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Portuguese|Xbox 360.Deploy.0 = Release_Portuguese|Xbox 360
 		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Russian|Xbox 360.ActiveCfg = Release_Russian|Xbox 360
 		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Russian|Xbox 360.Build.0 = Release_Russian|Xbox 360
 		{652C7D60-BC02-4E09-96DD-930012345678}.Release_Russian|Xbox 360.Deploy.0 = Release_Russian|Xbox 360
 		{652C7D60-BC02-4E09-96DD-930012345678}.Release|Xbox 360.ActiveCfg = Release_English|Xbox 360
 		{652C7D60-BC02-4E09-96DD-930012345678}.Release|Xbox 360.Build.0 = Release_English|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Italian|Xbox 360.ActiveCfg = Release_LTCG|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Italian|Xbox 360.Build.0 = Release_LTCG|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Italian|Xbox 360.Deploy.0 = Release_LTCG|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Portuguese|Xbox 360.ActiveCfg = Release_LTCG|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Portuguese|Xbox 360.Build.0 = Release_LTCG|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Portuguese|Xbox 360.Deploy.0 = Release_LTCG|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Russian|Xbox 360.ActiveCfg = Release_LTCG|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Russian|Xbox 360.Build.0 = Release_LTCG|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release_Russian|Xbox 360.Deploy.0 = Release_LTCG|Xbox 360

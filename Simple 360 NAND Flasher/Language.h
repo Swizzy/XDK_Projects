@@ -1,9 +1,14 @@
 #ifndef __S360NF_LANGUAGE_H
 #define __S360NF_LANGUAGE_H
 
-//#include "Translations\Russian.h"
-//#include "Translations\Italian.h"
-//#include "Translations\Portuguese.h"
+#ifdef RUSSIAN_TRANSLATION
+#include "Translations\Russian.h"
+#elif ITALIAN_TRANSLATION
+#include "Translations\Italian.h"
+#elif PORTUGUESE_TRANSLATION
+#include "Translations\Portuguese.h"
+#else
 #include "Translations\Default.h"
+#endif
 
 #endif

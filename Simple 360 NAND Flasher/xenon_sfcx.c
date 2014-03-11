@@ -529,8 +529,8 @@ void try_rawflash(char *filename)
 
 void try_rawdump(char *filename, int size)
 {
-	dprintf(" * rawdump v1 started (by Swizzy)\n");
 	FILE * fd;
+	dprintf(" * rawdump v1 started (by Swizzy)\n");
 	if (size == 0)
 	{
 		size = sfc.size_bytes_phys;
@@ -539,7 +539,6 @@ void try_rawdump(char *filename, int size)
 		else if((size != 0x1080000)&& (size != RAW_NAND_64)) // 16 M size
 		{
 			dprintf(MSG_ERROR_SIZE_NOT_SUPPORTED, size);
-			fclose(fd);
 			return;
 		}
 	}
@@ -547,7 +546,7 @@ void try_rawdump(char *filename, int size)
 	{
 		dprintf(MSG_ERROR MSG_UNABLE_TO_OPEN_FOR_WRITING, filename);
 		return;
-	}	
+	}
 	dprintf(MSG_OPENED_OK_ATTEMPTING_READ_FROM_FLASH,filename, size);
 	if(rawflash_readImage(size, fd) == 1)
 		dprintf(MSG_IMAGE_DUMPED);
@@ -583,7 +582,7 @@ unsigned int sfcx_init(void)
 		switch ((config >> 4) & 0x3)
 		{
 		case 0: // Unsupported 8MB?
-			dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_A-0);
+			dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_A0);
 			Sleep(5);
 			return 1;
 
@@ -629,7 +628,7 @@ unsigned int sfcx_init(void)
 			{
 				// Unsupported
 				sfc.meta_type = META_TYPE_0;
-				dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_B-0);
+				dprintf(MSG_SFCX_ERROR MSG_SFCX_UNSUPPORTED_TYPE_B0);
 				Sleep(5);
 				return 2;
 			}
