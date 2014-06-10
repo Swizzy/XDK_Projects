@@ -24,7 +24,7 @@
     <RootNamespace>ArcadeLicenseCheck</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -49,21 +49,21 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
-  <ImportGroup Label="ExtensionSettings"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros"/>
+  <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">Release\</OutDir>
@@ -76,8 +76,8 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">Release_Italian\</IntDir>
     <RemoteRoot>xe:\Samples\$(ProjectName)</RemoteRoot>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules/>
-    <CodeAnalysisRuleAssemblies/>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <ImageXexOutput>$(OutDir)Default.xex</ImageXexOutput>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">
@@ -155,6 +155,8 @@
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AnalyzeStalls>false</AnalyzeStalls>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalOptions>/ignore:4089  %(AdditionalOptions)</AdditionalOptions>
@@ -293,13 +295,13 @@
     </Deploy>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Automation.cpp"/>
+    <ClCompile Include="Automation.cpp" />
     <ClCompile Include="Corona4G.c">
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="keyextract.cpp"/>
-    <ClCompile Include="nandflasher_1.cpp"/>
-    <ClCompile Include="OutputConsole.cpp"/>
+    <ClCompile Include="keyextract.cpp" />
+    <ClCompile Include="nandflasher_1.cpp" />
+    <ClCompile Include="OutputConsole.cpp" />
     <ClCompile Include="xenon_sfcx.c">
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
@@ -311,16 +313,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Automation.h"/>
-    <ClInclude Include="Corona4G.h"/>
-    <ClInclude Include="keyextract.h"/>
-    <ClInclude Include="Language.h"/>
-    <ClInclude Include="OutputConsole.h"/>
-    <ClInclude Include="Translations\Default.h"/>
-    <ClInclude Include="Translations\Italian.h"/>
-    <ClInclude Include="Translations\Portuguese.h"/>
-    <ClInclude Include="Translations\Russian.h"/>
-    <ClInclude Include="xenon_sfcx.h"/>
+    <ClInclude Include="Automation.h" />
+    <ClInclude Include="Corona4G.h" />
+    <ClInclude Include="keyextract.h" />
+    <ClInclude Include="Language.h" />
+    <ClInclude Include="OutputConsole.h" />
+    <ClInclude Include="Translations\Default.h" />
+    <ClInclude Include="Translations\Italian.h" />
+    <ClInclude Include="Translations\Portuguese.h" />
+    <ClInclude Include="Translations\Russian.h" />
+    <ClInclude Include="xenon_sfcx.h" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(Configuration)'=='Release_Russian'">
@@ -344,6 +346,6 @@
       </ItemGroup>
     </Otherwise>
   </Choose>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
-  <ImportGroup Label="ExtensionTargets"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
 </Project>
