@@ -144,7 +144,11 @@ VOID flasher()
 		}
 		unsigned int r = sfcx_init();
 		sfcx_printinfo(r);
+#ifdef USE_UNICODE
+		dprintf(L"\n\n");
+#else
 		dprintf("\n\n");
+#endif
 		try_rawflash("game:\\updflash.bin");
 		sfcx_setconf(config);
 	}
@@ -178,11 +182,19 @@ VOID flasher()
 	dprintf(MSG_REBOOTING_IN);
 	for (int i = 5; i > 0; i--)
 	{
+#ifdef USE_UNICODE
+		dprintf(L"%i", i);
+#else
 		dprintf("%i", i);
+#endif
 		for (int j = 0; j < 4; j++)
 		{
 			Sleep(250);
+#ifdef USE_UNICODE
+			dprintf(L".");
+#else
 			dprintf(".");
+#endif
 		}
 	}
 	dprintf(MSG_BYE);
@@ -285,7 +297,7 @@ void TryAutoMode()
 	if (fexists("game:\\simpleflasher.cmd"))
 	{
 		AutoMode = true;
-		dprintf("game:\\simpleflasher.cmd Found!\n * Entering Automatic mode!\n");
+		dprintf(MSG_SIMPLEFLASHER_CMD_FOUND_ENTERING_AUTO);
 		int mode = CheckMode("game:\\simpleflasher.cmd");
 		if (mode == 1) //AutoDump
 		{
@@ -365,7 +377,11 @@ VOID __cdecl main()
 
 	
 #ifdef TRANSLATION_BY
+#ifdef USE_UNICODE
+	dprintf(L"Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n");
+#else
 	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n");
+#endif
 	dprintf(TRANSLATION_BY);
 #else
 	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n\n");

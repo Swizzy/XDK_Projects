@@ -28,7 +28,11 @@
 extern "C"
 {
 #endif
+#ifdef USE_UNICODE
+	void  __cdecl dprintf(const wchar_t* strFormat, ...);
+#else
 	void  __cdecl dprintf(const char* strFormat, ...);
+#endif
 #ifdef __cplusplus
 }
 #endif

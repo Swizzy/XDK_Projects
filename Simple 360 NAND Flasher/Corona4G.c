@@ -63,7 +63,11 @@ void try_rawdump4g(char* filename)
 	DWORD i;
 	totalRead = 0;
 	totalWrote = 0;
+#ifdef USE_UNICODE
+	dprintf(L" * rawdump4g v1 started (by Swizzy)\n");
+#else
 	dprintf(" * rawdump4g v1 started (by Swizzy)\n");
+#endif
 	if (getflashsz() == 0)
 	{
 		dprintf(MSG_ERROR MSG_UNABLE_TO_GET_SIZE_OF_FLASH);
@@ -97,7 +101,11 @@ void try_rawdump4g(char* filename)
 			if(i%0x20) // only update this every 32 buffer fills to speed things along...
 				dprintf(MSG_PROCESSED_OF_BYTES, totalBytes, flash_sz, (((float)totalBytes / (float)flash_sz) * 100));
 		}
+#ifdef USE_UNICODE
+		dprintf(L"\r");
+#else
 		dprintf("\r");
+#endif
 		CloseHandle(outf);
 		CloseHandle(flash);
 		if (totalRead - totalWrote == 0)
@@ -110,7 +118,11 @@ void try_rawflash4g(char* filename)
 {
 	PBYTE data;
 	DWORD filesize;
-	dprintf(" * rawflash4g v1 started (by Swizzy)\n");	
+#ifdef USE_UNICODE
+	dprintf(L" * rawflash4g v1 started (by Swizzy)\n");
+#else
+	dprintf(" * rawflash4g v1 started (by Swizzy)\n");
+#endif
 	if (getflashsz() == 0)
 	{
 		dprintf(MSG_ERROR MSG_UNABLE_TO_GET_SIZE_OF_FLASH);
@@ -167,7 +179,11 @@ BOOL Corona4GWrite(PBYTE data)
 		sta = NtWriteFile(hFile, 0, 0, 0, &ioFlash, srcdata, 0x4000, &lOffset);
 		if (sta < 0)
 		{
+#ifdef USE_UNICODE
+			dprintf(L"\r" MSG_ERROR MSG_UNABLE_TO_WRITE_BYTES_TO_FLASH, 0x4000, GetLastError(), lOffset.LowPart);
+#else
 			dprintf("\r" MSG_ERROR MSG_UNABLE_TO_WRITE_BYTES_TO_FLASH, 0x4000, GetLastError(), lOffset.LowPart);
+#endif
 			error = TRUE;
 		}
 		else
@@ -178,14 +194,22 @@ BOOL Corona4GWrite(PBYTE data)
 		if ((lOffset.LowPart%(0x4000*32)) == 0)
 			dprintf(MSG_PROCESSED_OF_BYTES, lOffset.LowPart, flash_sz, (((float)lOffset.LowPart / (float)flash_sz) * 100));
 	}
+#ifdef USE_UNICODE
+	dprintf(L"\r");
+#else
 	dprintf("\r");
+#endif
 	if (len > 0)
 	{
 		bWrote = 0;
 		sta = NtWriteFile(hFile, 0, 0, 0, &ioFlash, srcdata, len, &lOffset);
 		if (sta < 0)
 		{
+#ifdef USE_UNICODE
+			dprintf(L"\r" MSG_ERROR MSG_UNABLE_TO_WRITE_BYTES_TO_FLASH, len, GetLastError(), lOffset.LowPart);
+#else
 			dprintf("\r" MSG_ERROR MSG_UNABLE_TO_WRITE_BYTES_TO_FLASH, len, GetLastError(), lOffset.LowPart);
+#endif
 			error = TRUE;
 		}
 		else

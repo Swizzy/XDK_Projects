@@ -5,7 +5,11 @@
 #include <sys/stat.h>
 #include "Language.h"
 
-extern "C" void __cdecl dprintf( const char* strFormat, ... );
+#ifdef USE_UNICODE
+	extern "C" void __cdecl dprintf( const wchar_t* strFormat, ... );
+#else
+	extern "C" void __cdecl dprintf( const char* strFormat, ... );
+#endif
 extern "C" void HalReturnToFirmware(unsigned long mode);
 
 unsigned int calc_crc32(unsigned int& crc, const void* buf, size_t size)
@@ -22,7 +26,11 @@ void PrintValue(unsigned int hash, unsigned int hash2)
 {
 	dprintf(MSG_CALCULATED_VALUE, hash);
 	dprintf(MSG_EXPECTED_VALUE, hash2);
+#ifdef USE_UNICODE
+	dprintf(L"\n");
+#else
 	dprintf("\n");
+#endif
 }
 
 bool fexists(const char *filename)

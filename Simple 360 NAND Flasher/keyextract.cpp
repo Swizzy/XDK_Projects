@@ -67,8 +67,16 @@ void PrintCPUKey()
 	dprintf(MSG_YOUR_CPUKEY_IS);
 	int i;
 	for (i = 0; i < 0x10; i++)
+#ifdef USE_UNICODE
+		dprintf(L"%02X", keybuf[i]);
+#else
 		dprintf("%02X", keybuf[i]);
+#endif
+#ifdef USE_UNICODE
+	dprintf(L"\n");
+#else
 	dprintf("\n");
+#endif
 }
 
 void SaveCPUKey(const char* file)

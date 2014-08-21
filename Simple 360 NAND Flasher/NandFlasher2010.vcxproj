@@ -5,6 +5,10 @@
       <Configuration>Release_English</Configuration>
       <Platform>Xbox 360</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_German|Xbox 360">
+      <Configuration>Release_German</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_Italian|Xbox 360">
       <Configuration>Release_Italian</Configuration>
       <Platform>Xbox 360</Platform>
@@ -49,6 +53,12 @@
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_German|Xbox 360'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfAtl>false</UseOfAtl>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'" Label="PropertySheets">
@@ -63,6 +73,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_German|Xbox 360'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
@@ -70,10 +83,12 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">Release_Russian\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">Release_Portuguese\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">Release_Italian\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_German|Xbox 360'">Release_German\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_English|Xbox 360'">Release\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Russian|Xbox 360'">Release_Russian\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Portuguese|Xbox 360'">Release_Portuguese\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Italian|Xbox 360'">Release_Italian\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_German|Xbox 360'">Release_German\</IntDir>
     <RemoteRoot>xe:\Samples\$(ProjectName)</RemoteRoot>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules />
@@ -147,7 +162,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <AdditionalIncludeDirectories>Common;..\..\..\Modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>RUSSIAN_TRANSLATION;NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_UNICODE;RUSSIAN_TRANSLATION;NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -294,6 +309,59 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </Deploy>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_German|Xbox 360'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <OpenMPSupport>FALSE</OpenMPSupport>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>Common;..\..\..\Modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>GERMAN_TRANSLATION;NDEBUG;_XBOX;XBOX;XBOX_SAMPLE;_XBOX_CRT_DEPRECATE_INSECURE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AnalyzeStalls>false</AnalyzeStalls>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/ignore:4089  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>xapilib.lib;vcomp.lib;d3d9ltcg.lib;d3dx9.lib;xgraphics.lib;xapilib.lib;xaudio2.lib;x3daudioltcg.lib;xmcoreltcg.lib;xboxkrnl.lib;xbdm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SetChecksum>true</SetChecksum>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ImageXex>
+      <ConfigurationFile>xex.xml</ConfigurationFile>
+      <AdditionalSections>font=$(OutDir)\font.xpr,RO</AdditionalSections>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <AllowControllerSwapping>true</AllowControllerSwapping>
+    </ImageXex>
+    <Deploy>
+      <DeploymentType>CopyToHardDrive</DeploymentType>
+      <DvdEmulationType>ZeroSeekTimes</DvdEmulationType>
+      <DeploymentFiles>$(RemoteRoot)=$(ImagePath)</DeploymentFiles>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </Deploy>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Automation.cpp" />
     <ClCompile Include="Corona4G.c">
@@ -319,6 +387,7 @@
     <ClInclude Include="Language.h" />
     <ClInclude Include="OutputConsole.h" />
     <ClInclude Include="Translations\Default.h" />
+    <ClInclude Include="Translations\German.h" />
     <ClInclude Include="Translations\Italian.h" />
     <ClInclude Include="Translations\Portuguese.h" />
     <ClInclude Include="Translations\Russian.h" />

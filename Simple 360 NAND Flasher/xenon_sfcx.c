@@ -455,7 +455,11 @@ int rawflash_writeImage(int len, FILE * fd)
 		}
 		i++;
 	}
+#ifdef USE_UNICODE
+	dprintf(L"\r\n\n");
+#else
 	dprintf("\r\n\n");
+#endif
 	return 1;
 }
 
@@ -490,7 +494,11 @@ int rawflash_readImage(int len, FILE * fd)
 		if((status & (STATUS_BB_ER|STATUS_ECC_ER)) != 0) dprintf(MSG_BLOCK_SEEMS_BAD, i, status);
 		i++;
 	}
+#ifdef USE_UNICODE
+	dprintf(L"\r\n\n");
+#else
 	dprintf("\r\n\n");
+#endif
 	return 1;
 }
 
@@ -504,7 +512,11 @@ void try_rawflash(char *filename)
 		dprintf(MSG_FILE_NOT_FOUND, filename);
 		return;
 	}
+#ifdef USE_UNICODE
+	dprintf(L" * rawflash v5 started (by cOz, modified By Swizzy)\n");
+#else
 	dprintf(" * rawflash v5 started (by cOz, modified By Swizzy)\n");
+#endif
 
 	_stat64(filename, &s);
 	size = (int)(s.st_size&0xFFFFFFFF);
@@ -530,7 +542,11 @@ void try_rawflash(char *filename)
 void try_rawdump(char *filename, int size)
 {
 	FILE * fd;
+#ifdef USE_UNICODE
+	dprintf(L" * rawdump v1 started (by Swizzy)\n");
+#else
 	dprintf(" * rawdump v1 started (by Swizzy)\n");
+#endif
 	if (size == 0)
 	{
 		size = sfc.size_bytes_phys;
@@ -737,6 +753,25 @@ void sfcx_setconf(unsigned int config) { sfcx_writereg(SFCX_CONFIG, config); }
 
 void sfcx_printinfo(unsigned int config)
 {
+#ifdef USE_UNICODE
+	dprintf(L"   config register     = %X\n", config);
+
+	dprintf(L"   sfc:page_sz         = %X\n", sfc.page_sz);
+	dprintf(L"   sfc:meta_sz         = %X\n", sfc.meta_sz);
+	dprintf(L"   sfc:page_sz_phys    = %X\n", sfc.page_sz_phys);
+
+	dprintf(L"   sfc:pages_in_block  = %X\n", sfc.pages_in_block);
+	dprintf(L"   sfc:block_sz        = %X\n", sfc.block_sz);
+	dprintf(L"   sfc:block_sz_phys   = %X\n", sfc.block_sz_phys);
+
+	dprintf(L"   sfc:size_mb         = %dMB\n", sfc.size_mb);
+	dprintf(L"   sfc:size_bytes      = %X\n", sfc.size_bytes);
+	dprintf(L"   sfc:size_bytes_phys = %X\n", sfc.size_bytes_phys);
+
+	dprintf(L"   sfc:size_pages      = %X\n", sfc.size_pages);
+	dprintf(L"   sfc:size_blocks     = %X\n", sfc.size_blocks);
+	dprintf(L"\n");
+#else
 	dprintf("   config register     = %X\n", config);
 
 	dprintf("   sfc:page_sz         = %X\n", sfc.page_sz);
@@ -754,6 +789,7 @@ void sfcx_printinfo(unsigned int config)
 	dprintf("   sfc:size_pages      = %X\n", sfc.size_pages);
 	dprintf("   sfc:size_blocks     = %X\n", sfc.size_blocks);
 	dprintf("\n");
+#endif
 }
 
 int sfcx_detecttype(void)

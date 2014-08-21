@@ -7,6 +7,8 @@
 #include "Translations\Italian.h"
 #elif PORTUGUESE_TRANSLATION
 #include "Translations\Portuguese.h"
+#elif GERMAN_TRANSLATION
+#include "Translations\German.h"
 #else
 #include "Translations\Default.h"
 #endif
