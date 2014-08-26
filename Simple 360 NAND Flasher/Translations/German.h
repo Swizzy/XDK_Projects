@@ -27,7 +27,7 @@
 #define MSG_PROCESSED_OF_BYTES "\rProcessed 0x%X of 0x%X bytes (%3.2f %%)"
 #define MSG_PROCESSING_START "\rprocessing block"
 #define MSG_PROCESSED_START "\rProcessed"
-#define MSG_DONE_SUCCESS_DUMPED_BYTES "\rFertig! Erfolgreich gelesen 0x%X bytes von %s\n"
+#define MSG_DONE_SUCCESS_DUMPED_BYTES "\rFertig! Erfolgreich ausgelesene 0x%X bytes nach %s\n"
 #define MSG_DONE_READ_BYTES_FROM_NAND_WROTE "\rFertig! gelesen 0x%X bytes vom NAND, geschrieben 0x%X bytes von %s\n"
 #define MSG_DONE_SUCCESS_WROTE_BYTES "Erfolgreich geschrieben 0x%X bytes von %s zum Flash!\n"
 #define MSG_DONE_FAILED_WRITE_BYTES "Schreibfehler 0x%X bytes vom %s zum Flash!\n"
