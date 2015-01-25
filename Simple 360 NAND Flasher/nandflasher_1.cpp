@@ -11,11 +11,17 @@ extern "C" {
 #include "xenon_sfcx.h"
 }
 
+#pragma comment(lib, "xav")
+#pragma comment(lib, "xapilib")
+
+extern "C" NTSTATUS XeKeysGetKey(WORD KeyId, PVOID KeyBuffer, PDWORD keyLength);
+
 ATG::GAMEPAD*	m_pGamepad; // Gamepad for input
 time_t start,end; //Timer times for measuring time difference
 double tdiff; // Double for time difference
-bool started = false, dumped = false, dump_in_progress = false, MMC = false, write = false, AutoMode = false;
+bool started = false, dumped = false, dump_in_progress = false, MMC = false, write = false, AutoMode = false, GotSerial = false;
 unsigned int config = 0;
+BYTE consoleSerial[0xC];
 
 extern "C" VOID HalReturnToFirmware(DWORD mode); // To Shutdown console when done ;)
 extern "C" VOID XInputdPowerDownDevice(DWORD flag); // To Kill controllers
@@ -203,21 +209,6 @@ VOID flasher()
 
 VOID dumper(char *filename)
 {
-	if (!AutoMode)
-	{
-		if (fexists(filename))
-		{
-			dprintf(MSG_PRESS_START_TO_OVERWRITE_EXISTING_FILE, filename);
-			for(;;)
-			{
-				m_pGamepad = ATG::Input::GetMergedInput();
-				if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
-					break;
-				else if (m_pGamepad->wPressedButtons)
-					XLaunchNewImage(XLAUNCH_KEYWORD_DEFAULT_APP, 0);
-			}
-		}
-	}
 	started = true;
 	if (!MMC)
 	{
@@ -362,7 +353,33 @@ void PrintConsoleInfo(bool GotKey)
 	PrintDLVersion();
 	if (GotKey)
 		PrintCPUKey();
+	if (GotSerial)
+		dprintf(MSG_CONSOLE_SERIAL, consoleSerial);
 	dprintf(MSG_CONSOLE_INFO_BOTTOM);
+}
+
+bool CheckGameMounted() {
+	FILE * fd;
+	if (fopen_s(&fd, "game:\\test.tmp", "w") != 0)
+	{
+		dprintf(MSG_ERROR MSG_GAME_NOT_MOUNTED_TRYING_USB);
+		fclose(fd);
+		if (mount("game:", "\\Device\\Mass0") != 0)
+		{
+			dprintf(MSG_ERROR MSG_GAME_NOT_MOUNTED_TRYING_HDD);
+			if (mount("game:", "\\Device\\Harddisk0\\Partition1") != 0)
+			{
+				dprintf(MSG_ERROR MSG_GAME_NOT_MOUNTED);
+				return false;
+			}
+		}
+	}
+	else
+	{
+		fclose(fd);
+		remove("game:\\test.tmp");
+	}
+	return true;
 }
 
 //--------------------------------------------------------------------------------------
@@ -372,21 +389,21 @@ void PrintConsoleInfo(bool GotKey)
 VOID __cdecl main()
 {
 	// Initialize the console window
-	write = fexists("game:\\updflash.bin");
 	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
-
+	if (!CheckGameMounted())
+		return;
+	write = fexists("game:\\updflash.bin");
 	
 #ifdef TRANSLATION_BY
 #ifdef USE_UNICODE
-	dprintf(L"Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n");
+	dprintf(L"Simple 360 NAND Flasher by Swizzy v1.5 (BETA)\n");
 #else
-	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n");
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.5 (BETA)\n");
 #endif
 	dprintf(TRANSLATION_BY);
 #else
-	dprintf("Simple 360 NAND Flasher by Swizzy v1.4b (BETA)\n\n");
+	dprintf("Simple 360 NAND Flasher by Swizzy v1.5 (BETA)\n\n");
 #endif
-
 	dprintf(MSG_DETECTING_NAND_TYPE);
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND
 	if (!MMC)
@@ -403,6 +420,9 @@ VOID __cdecl main()
 		dprintf(MSG_ERROR MSG_INCOMPATIBLE_DASHLAUNCH);
 		GotKey = false;
 	}
+	dprintf(MSG_ATTEMPTING_TO_GET_CONSOLE_SERIAL);
+	DWORD dwtmp = 0xC;
+	GotSerial = XeKeysGetKey(0x14, consoleSerial, &dwtmp) >= 0;
 	PrintConsoleInfo(GotKey);
 	TryAutoMode();
 	if (write)
@@ -434,12 +454,58 @@ VOID __cdecl main()
 			}
 			else if ((m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_B) && (!dumped) && (write))
 			{
-				dumper("game:\\recovery.bin");
+				if (!fexists("game:\\recovery.bin"))
+					dumper("game:\\recovery.bin");
+				else
+				{
+					dprintf(MSG_PRESS_START_TO_OVERWRITE_EXISTING_FILE, "game:\\recovery.bin");
+					if (GotSerial)
+						dprintf(MSG_PRESS_B_TO_OVERWRITE_EXISTING_FILE_SERIAL, "game:\\recovery", consoleSerial);
+					for(;;)
+					{
+						m_pGamepad = ATG::Input::GetMergedInput();
+						if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
+						{
+							dumper("game:\\recovery.bin");
+							break;
+						}
+						else if ((m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_B) && GotSerial)
+						{
+							char path[512];
+							sprintf_s(path, 512, "game:\\recovery_%s.bin", consoleSerial);							
+							dumper(path);
+							break;
+						}
+					}
+				}
 				flasher();
 			}
 			else if ((m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_X) && (!dumped))
 			{
-				dumper("game:\\flashdmp.bin");
+				if (!fexists("game:\\flashdmp.bin"))
+					dumper("game:\\flashdmp.bin");
+				else
+				{
+					dprintf(MSG_PRESS_START_TO_OVERWRITE_EXISTING_FILE, "game:\\flashdmp.bin");
+					if (GotSerial)
+						dprintf(MSG_PRESS_B_TO_OVERWRITE_EXISTING_FILE_SERIAL, "game:\\flashdmp", consoleSerial);
+					for(;;)
+					{
+						m_pGamepad = ATG::Input::GetMergedInput();
+						if (m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_START)
+						{
+							dumper("game:\\flashdmp.bin");
+							break;
+						}
+						else if ((m_pGamepad->wPressedButtons & XINPUT_GAMEPAD_B) && (GotSerial))
+						{
+							char path[512];
+							sprintf_s(path, 512, "game:\\flashdmp_%s.bin", consoleSerial);							
+							dumper(path);
+							break;
+						}
+					}
+				}
 				dprintf(MSG_PRESS_ANY_BUTTON_TO_EXIT);
 			}
 			else if (m_pGamepad->wPressedButtons) { break; }

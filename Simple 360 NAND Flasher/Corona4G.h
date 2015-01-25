@@ -43,6 +43,7 @@ extern "C" {
 	NTSTATUS NtClose(HANDLE Handle);
 	NTSTATUS NtWriteFile(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, PVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, PVOID Buffer, DWORD Length, PLARGE_INTEGER ByteOffset);
 
+	HRESULT mount(const char* szDrive, char* szDevice);
 	void try_rawdump4g(char* filename);
 	void try_rawflash4g(char* filename);
 	int getflashsz(void);

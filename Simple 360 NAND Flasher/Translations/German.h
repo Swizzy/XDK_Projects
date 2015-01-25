@@ -1,6 +1,7 @@
 ﻿#ifndef __GERMAN_TRANSLATION
 #define __GERMAN_TRANSLATION
 
+#define TRANSLATION_BY "Übersetzung von Dr.Gonzo\n\n"
 #define MSG_SIMPLEFLASHER_CMD_FOUND_ENTERING_AUTO "game:\\simpleflasher.cmd gefunden!\n * Gehe in den Automatik Modus!\n"
 #define MSG_GETTING_NAND_SIZE "Überprüfe Nand Größe...\n"
 #define MSG_SIZE " * Größe: 0x%X (%s)\n"
@@ -116,5 +117,12 @@
 #define MSG_PRESS_X_TO_DUMP_RAWFLASH4G "Drücke X, wenn Du Dein Nand mit Rawdump4G v1, auslesen willst\n"
 #define MSG_PRESS_ANY_OTHER_BUTTON_TO_EXIT "Wenn Du irgendetwas anderes drückst, wird die Anwendung geschlossen ! ...\n"
 #define MSG_PRESS_ANY_BUTTON_TO_EXIT "Drücke irgendeinen Knopf zum verlassen !\n"
+
+#define MSG_PRESS_B_TO_OVERWRITE_EXISTING_FILE_SERIAL "Or press B to save/overwrite as %s_%s.bin\n"
+#define MSG_ATTEMPTING_TO_GET_CONSOLE_SERIAL " * Attempting to get Console Serial...\n"
+#define MSG_CONSOLE_SERIAL "Console Serial: %s\n"
+#define MSG_GAME_NOT_MOUNTED_TRYING_USB "game:\\ isn't mounted, checking if a usb device is available...\n"
+#define MSG_GAME_NOT_MOUNTED_TRYING_HDD "game:\\ isn't mounted, checking if a hdd is available...\n"
+#define MSG_GAME_NOT_MOUNTED "game:\\ isn't mounted, unable to continue!\n"
 
 #endif
