@@ -1,4 +1,4 @@
-NXE2GOD 1.2
+NXE2GOD 1.3
 -----------
 
 ***************
@@ -25,6 +25,8 @@ The XEX Version is meant for those of you wanting to create your own live packag
 *************
 * Changelog *
 *************
+v1.3 - Mod by Swizzy released 24-05-2015
++ Added support for USB devices (since USBMU after 17349 actually go into USB#:\Content\..... as a hidden directory)
 
 v1.2 - Mod by Swizzy released 23-01-2013
 + Added support for USBMU Devices, Limited to: USBMU0, USBMU1, USBMU2, USBMU3, USBMU4

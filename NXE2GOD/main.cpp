@@ -385,45 +385,29 @@ HRESULT ScanDir(string strFind)
 	return S_OK;
 }
 
+void MountDevice(const char* mountPath, char* path, char* msg, int* mounted){
+	if (Map(mountPath, path) == S_OK)
+	{
+		devices.push_back(mountPath);
+		debugLog(msg);
+		*mounted++;
+	}
+}
+
 void mountdrives()
 {
 	int mounted = 0;
-	if (Map("HDD:","\\Device\\Harddisk0\\Partition1") == S_OK)
-	{
-		devices.push_back("HDD:");
-		debugLog("hdd mounted");
-		mounted++;
-	}
-	if (Map("USBMU0:", "\\Device\\Mass0PartitionFile\\Storage") == S_OK)
-	{
-		devices.push_back("USBMU0:");
-		debugLog("usbmu0 mounted");
-		mounted++;
-	}
-	if (Map("USBMU1:", "\\Device\\Mass1PartitionFile\\Storage") == S_OK)
-	{
-		devices.push_back("USBMU1:");
-		debugLog("usbmu1 mounted");
-		mounted++;
-	}
-	if (Map("USBMU2:", "\\Device\\Mass2PartitionFile\\Storage") == S_OK)
-	{
-		devices.push_back("USBMU2:");
-		debugLog("usbmu2 mounted");
-		mounted++;
-	}
-	if (Map("USBMU3:", "\\Device\\Mass3PartitionFile\\Storage") == S_OK)
-	{
-		devices.push_back("USBMU3:");
-		debugLog("usbmu3 mounted");
-		mounted++;
-	}
-	if (Map("USBMU4:", "\\Device\\Mass4PartitionFile\\Storage") == S_OK)
-	{
-		devices.push_back("USBMU4:");
-		debugLog("usbmu4 mounted");
-		mounted++;
-	}
+	MountDevice("HDD:", "\\Device\\Harddisk0\\Partition1", "hdd mounted", &mounted);
+	MountDevice("USB0:", "\\Device\\Mass0", "usb0 mounted", &mounted);
+	MountDevice("USB1:", "\\Device\\Mass1", "usb1 mounted", &mounted);
+	MountDevice("USB2:", "\\Device\\Mass2", "usb2 mounted", &mounted);
+	MountDevice("USB3:", "\\Device\\Mass3", "usb3 mounted", &mounted);
+	MountDevice("USB4:", "\\Device\\Mass4", "usb4 mounted", &mounted);
+	MountDevice("USBMU0:", "\\Device\\Mass0PartitionFile\\Storage", "usbmu0 mounted", &mounted);
+	MountDevice("USBMU1:", "\\Device\\Mass1PartitionFile\\Storage", "usbmu1 mounted", &mounted);
+	MountDevice("USBMU2:", "\\Device\\Mass2PartitionFile\\Storage", "usbmu2 mounted", &mounted);
+	MountDevice("USBMU3:", "\\Device\\Mass3PartitionFile\\Storage", "usbmu3 mounted", &mounted);
+	MountDevice("USBMU4:", "\\Device\\Mass4PartitionFile\\Storage", "usbmu4 mounted", &mounted);
 	if (mounted != 0)
 	{
 		debugLog("Drive(s) mounted, Scanning folders");
@@ -444,7 +428,7 @@ VOID __cdecl main()
 {
 	bool keypush = false;
 	console.Create("embed:\\font", 0x00000000, 0xFFFF6600);
-	console.Format( "NXE2GOD V1.2 by Swizzy original source by Dstruktiv\n" );
+	console.Format( "NXE2GOD V1.3 by Swizzy original source by Dstruktiv\n" );
 	//genlog(); //<--- only use this when you're lazy ;)
 	debuglog = FileExists("game:\\debug.log");
 	mountdrives();
