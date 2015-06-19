@@ -17,9 +17,9 @@ void  __cdecl dprintf(const char* strFormat, ...)
 	va_list pArglist;
 	va_start(pArglist, strFormat);
 #ifdef USE_UNICODE
-	_vsnwprintf_s(buf, 512, strFormat, pArglist);
+	_vsnwprintf_s(buf, sizeof(buf), strFormat, pArglist);
 #else
-	vsnprintf_s(buf, 512, strFormat, pArglist);
+	vsnprintf_s(buf, sizeof(buf), strFormat, pArglist);
 #endif
 	va_end(pArglist);
 	g_console.Display(buf);
