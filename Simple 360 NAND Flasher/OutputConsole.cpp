@@ -4,12 +4,14 @@
 #include "Automation.h"
 #include <stdio.h>
 
+#define TEXTBUFFER_SIZE 512
+
 ATG::Console g_console;// console for output
 #ifdef USE_UNICODE
-WCHAR buf[512]; // Text buffer
+WCHAR buf[TEXTBUFFER_SIZE]; // Text buffer
 void  __cdecl dprintf(const wchar_t* strFormat, ...)
 #else
-char buf[512]; // Text buffer
+char buf[TEXTBUFFER_SIZE]; // Text buffer
 void  __cdecl dprintf(const char* strFormat, ...)
 #endif
 {
@@ -17,9 +19,9 @@ void  __cdecl dprintf(const char* strFormat, ...)
 	va_list pArglist;
 	va_start(pArglist, strFormat);
 #ifdef USE_UNICODE
-	_vsnwprintf_s(buf, sizeof(buf), strFormat, pArglist);
+	_vsnwprintf_s(buf, TEXTBUFFER_SIZE, strFormat, pArglist);
 #else
-	vsnprintf_s(buf, sizeof(buf), strFormat, pArglist);
+	vsnprintf_s(buf, TEXTBUFFER_SIZE, strFormat, pArglist);
 #endif
 	va_end(pArglist);
 	g_console.Display(buf);
