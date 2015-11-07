@@ -54,10 +54,12 @@ bool GetCPUKey()
 		if(ret == SYSCALL_KEY || ret == dest)
 		{
 			memcpy(keybuf, buf, 0x10);
+			XPhysicalFree(buf);
 			return true;
 		}
 		else
 			dprintf(MSG_SYSCALL_RETURN_VALUE, ret);
+		XPhysicalFree(buf);
 	}
 	return false;
 }
