@@ -20,17 +20,17 @@ HRESULT mount(const char* szDrive, char* szDevice)
 	return (HRESULT)ObCreateSymbolicLink(&LinkName, &DeviceName);
 }
 
+char sizeReadable[0x40] = { 0 };
 char* GetSizeReadable(unsigned int i)
 {
-	char * ret = "";
 	if (i >= 0x40000000) // Gigabyte
-		sprintf_s(ret, 512, "%3.2f GB", (float)(i >> 20) / (float)1024);
+		sprintf_s(sizeReadable, 512, "%3.2f GB", (float)(i >> 20) / (float)1024);
 	else if (i >= 0x100000) // Megabyte
-		sprintf_s(ret, 512, "%3.2f MB", (float)(i >> 10) / (float)1024);
+		sprintf_s(sizeReadable, 512, "%3.2f MB", (float)(i >> 10) / (float)1024);
 	else if (i >= 0x400) // Kilobyte
-		sprintf_s(ret, 512, "%3.2f KB", (float)i / (float)1024);
+		sprintf_s(sizeReadable, 512, "%3.2f KB", (float)i / (float)1024);
 	else
-		sprintf_s(ret, 512, "%3.2f B", (float)i / (float)1024);
+		sprintf_s(sizeReadable, 512, "%3.2f B", (float)i / (float)1024);
 	return ret;
 }
 
