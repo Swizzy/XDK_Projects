@@ -290,6 +290,16 @@ void TryAutoMode()
 		AutoMode = true;
 		dprintf(MSG_SIMPLEFLASHER_CMD_FOUND_ENTERING_AUTO);
 		int mode = CheckMode("game:\\simpleflasher.cmd");
+
+#ifdef READ_ONLY
+		if ( (mode == 2) || (mode == 3) )
+		{
+			dprintf(MSG_READ_ONLY_RETURNING_TO_MANUAL_MODE);
+			AutoMode = false;
+			return;
+		}
+#endif
+
 		if (mode == 1) //AutoDump
 		{
 			dprintf(MSG_AUTO_DUMP_FOUND);
@@ -392,8 +402,11 @@ VOID __cdecl main()
 	MakeConsole("embed:\\font", CONSOLE_COLOR_BLACK, CONSOLE_COLOR_GOLD);
 	if (!CheckGameMounted())
 		return;
+
+#ifndef READ_ONLY
 	write = fexists("game:\\updflash.bin");
-	
+#endif
+
 #ifdef TRANSLATION_BY
 #ifdef USE_UNICODE
 	dprintf(L"Simple 360 NAND Flasher by Swizzy v1.5 (BETA)\n");
@@ -404,6 +417,11 @@ VOID __cdecl main()
 #else
 	dprintf("Simple 360 NAND Flasher by Swizzy v1.5 (BETA)\n\n");
 #endif
+
+#ifdef READ_ONLY
+	dprintf(MSG_READ_ONLY_NOTICE);
+#endif
+
 	dprintf(MSG_DETECTING_NAND_TYPE);
 	MMC = (sfcx_detecttype() == 1); // 1 = MMC, 0 = RAW NAND
 	if (!MMC)

@@ -152,4 +152,7 @@
 #define MSG_GAME_NOT_MOUNTED_TRYING_HDD "game:\\ isn't mounted, checking if a hdd is available...\n"
 #define MSG_GAME_NOT_MOUNTED "game:\\ isn't mounted, unable to continue!\n"
 
+#define MSG_READ_ONLY_RETURNING_TO_MANUAL_MODE "NAND flashing is disabled in this build.\nReturning to Manual Mode!\n" 
+#define MSG_READ_ONLY_NOTICE "Notice: NAND flashing is disabled in this build\n"
+
 #endif
