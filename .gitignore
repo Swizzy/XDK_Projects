@@ -13,3 +13,7 @@
 *.a
 /Simple 360 NAND Flasher/Release_LTCG
 *.ipch
+
+# User generated files
+*.vcxproj.user
+*.sdf
