@@ -31,7 +31,7 @@ char* GetSizeReadable(unsigned int i)
 		sprintf_s(sizeReadable, 512, "%3.2f KB", (float)i / (float)1024);
 	else
 		sprintf_s(sizeReadable, 512, "%3.2f B", (float)i / (float)1024);
-	return ret;
+	return sizeReadable;
 }
 
 int getflashsz(void)
